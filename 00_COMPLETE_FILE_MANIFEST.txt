@@ -2,151 +2,175 @@
 ║                                                                                ║
 ║                   ✅ COMPLETE FILE MANIFEST - ALL FILES ✅                    ║
 ║                                                                                ║
-║            Automated Trading System - Complete Package v1.0.0                  ║
+║            Automated Trading System - Complete Package v1.1.0                  ║
 ║                                                                                ║
 ╚════════════════════════════════════════════════════════════════════════════════╝
 
-COMPLETE FILE LIST (14 FILES TOTAL)
+COMPLETE FILE LIST (17 FILES TOTAL)
 ════════════════════════════════════════════════════════════════════════════════
 
-✅ ALL 14 FILES ARE INCLUDED IN YOUR DOWNLOAD
+✅ ALL 17 FILES ARE INCLUDED
 
-PYTHON SOURCE CODE (4 files - 2000+ lines)
+PYTHON SOURCE CODE (4 files - 2400+ lines)
 ────────────────────────────────────────────────────────────────────────────────
 
-1. ✅ automated_trading_system.py (20 KB, 553 lines)
+1. ✅ automated_trading_system.py (21 KB, 585 lines)
    Purpose: Main trading system orchestrator
    Contains: AutomatedTradingSystem class, IndicatorCalculator
+   Key methods: fetch_data(), fetch_realtime_data(), calculate_indicators(),
+                generate_signals(), execute_signal(), backtest()
    Usage: Primary entry point - main system controller
    Status: PRODUCTION READY
 
-2. ✅ trading_system.py (21 KB, 571 lines)
+2. ✅ trading_system.py (20 KB, 571 lines)
    Purpose: Portfolio and position management
    Contains: PortfolioManager, RiskManager, OrderManager, TradeLogger
    Usage: Manages positions, capital, risk, and trades
    Status: PRODUCTION READY
 
-3. ✅ signal_generator.py (17 KB, 486 lines)
+3. ✅ signal_generator.py (16 KB, 486 lines)
    Purpose: Technical analysis and signal generation
    Contains: SignalGenerator, Signal, IndicatorSnapshot, MultiTimeframeSignalAnalyzer
-   Usage: Generates buy/sell signals with AI-based confidence scoring
+   Usage: Generates buy/sell signals with confidence scoring
    Status: PRODUCTION READY
 
-4. ✅ backtest_framework.py (18 KB, 300+ lines)
+4. ✅ backtest_framework.py (17 KB, 437 lines)
    Purpose: Advanced backtesting utilities
-   Contains: IndicatorCalculator, BacktestEngine, TechnicalIndicators
+   Contains: TechnicalIndicators, BacktestEngine, MultiTimeframeAnalyzer
    Usage: Additional backtesting functionality and utilities
    Status: PRODUCTION READY
 
-CONFIGURATION (1 file)
+TEST FILES (2 files)
 ────────────────────────────────────────────────────────────────────────────────
 
-5. ✅ requirements.txt (172 bytes, 10 packages)
+5. ✅ test_examples.py (9.5 KB, 231 lines)
+   Purpose: Test suite for all QUICK_REFERENCE.md code examples
+   Contains: 12 tests covering backtest, portfolio, signals, realtime data
+   Usage: python test_examples.py
+   Status: ALL 12 TESTS PASSING
+
+6. ✅ test_readme_examples.py (2.9 KB, 98 lines)
+   Purpose: Test suite for all README.md code examples
+   Contains: 4 tests covering simple backtest, multi-stock, custom config, live signal
+   Usage: python test_readme_examples.py
+   Status: ALL 4 TESTS PASSING
+
+CONFIGURATION (2 files)
+────────────────────────────────────────────────────────────────────────────────
+
+7. ✅ requirements.txt (172 bytes, 10 packages)
    Purpose: Python dependencies specification
    Contains: pandas, numpy, yfinance, scikit-learn, scipy, requests, etc.
-   Usage: Install with: pip install -r requirements.txt
+   Usage: pip install -r requirements.txt
    Status: READY TO USE
+
+8. ✅ .gitignore (35 bytes)
+   Purpose: Git version control exclusions
+   Contains: venv/, __pycache__/, *.pyc, .DS_Store
+   Status: CONFIGURED
 
 GETTING STARTED GUIDES (2 files)
 ────────────────────────────────────────────────────────────────────────────────
 
-6. ✅ START_HERE.txt (13 KB)
+9. ✅ START_HERE.txt (13 KB)
    Purpose: Step-by-step getting started guide
    Content: Installation, first backtest, learning path, next steps
    Reading Time: 15 minutes
    Recommended: READ FIRST!
    Status: ESSENTIAL
 
-7. ✅ README.md (14 KB)
-   Purpose: Quick project overview
-   Content: Features summary, quick start, code examples
-   Reading Time: 5 minutes
-   Recommended: Read immediately after START_HERE.txt
-   Status: QUICK START
+10. ✅ README.md (14 KB)
+    Purpose: Quick project overview
+    Content: Features summary, quick start, code examples
+    Reading Time: 5 minutes
+    Recommended: Read immediately after START_HERE.txt
+    Status: QUICK START
 
 COMPREHENSIVE DOCUMENTATION (2 files)
 ────────────────────────────────────────────────────────────────────────────────
 
-8. ✅ TRADING_SYSTEM_GUIDE.md (20 KB, 500+ lines)
-   Purpose: Complete system documentation
-   Content: Installation, architecture, components, 10+ examples, troubleshooting
-   Reading Time: 1-2 hours
-   Recommended: Full understanding of system
-   Status: MOST COMPREHENSIVE RESOURCE
+11. ✅ TRADING_SYSTEM_GUIDE.md (20 KB, 500+ lines)
+    Purpose: Complete system documentation
+    Content: Installation, architecture, components, 10+ examples, troubleshooting
+    Reading Time: 1-2 hours
+    Recommended: Full understanding of system
+    Status: MOST COMPREHENSIVE RESOURCE
 
-9. ✅ QUICK_REFERENCE.md (8.6 KB)
-   Purpose: Quick lookup reference guide
-   Content: Common tasks, code snippets, parameter reference, class methods
-   Reading Time: As needed during development
-   Recommended: Use while building/coding
-   Status: QUICK LOOKUP
+12. ✅ QUICK_REFERENCE.md (8.6 KB)
+    Purpose: Quick lookup reference guide
+    Content: Common tasks, code snippets, parameter reference, class methods
+    Reading Time: As needed during development
+    Recommended: Use while building/coding
+    Status: QUICK LOOKUP
 
 PROJECT ORGANIZATION FILES (4 files)
 ────────────────────────────────────────────────────────────────────────────────
 
-10. ✅ PROJECT_STRUCTURE.md (16 KB)
+13. ✅ PROJECT_STRUCTURE.md (16 KB)
     Purpose: Project organization and architecture
     Content: Directory structure, components, workflow, configuration
     Reading Time: 30 minutes
-    Recommended: Understanding project layout
     Status: PROJECT BLUEPRINT
 
-11. ✅ PROJECT_SUMMARY.txt (24 KB)
+14. ✅ PROJECT_SUMMARY.txt (24 KB)
     Purpose: Complete detailed project summary
     Content: Statistics, features, architecture, system specs, requirements
     Reading Time: 30 minutes
-    Recommended: Comprehensive project understanding
     Status: DETAILED OVERVIEW
 
-12. ✅ SYSTEM_OVERVIEW.txt (18 KB)
+15. ✅ SYSTEM_OVERVIEW.txt (18 KB)
     Purpose: System features and capabilities overview
     Content: Feature list, indicators, risk management, learning path
     Reading Time: 20 minutes
-    Recommended: Understanding all capabilities
     Status: FEATURES LIST
 
-13. ✅ DELIVERY_SUMMARY.md (14 KB)
+16. ✅ DELIVERY_SUMMARY.md (14 KB)
     Purpose: Delivery information and getting started guide
-    Content: Delivery checklist, next steps, quick start, next steps
+    Content: Delivery checklist, next steps, quick start
     Reading Time: 15 minutes
-    Recommended: After downloading files
     Status: DELIVERY INFO
 
-UTILITY & REFERENCE FILES (2 files)
+UTILITY & REFERENCE FILES (1 file)
 ────────────────────────────────────────────────────────────────────────────────
 
-14. ✅ FILES_READY_FOR_DOWNLOAD.txt (16 KB)
-    Purpose: Complete download manifest and instructions
-    Content: File descriptions, download checklist, reading order
-    Reading Time: 10 minutes
-    Recommended: File reference guide
-    Status: FILE MANIFEST
-
-15. ✅ 00_COMPLETE_FILE_MANIFEST.txt (This file)
+17. ✅ 00_COMPLETE_FILE_MANIFEST.txt (This file)
     Purpose: Complete file list and verification
-    Content: All 14 files listed with descriptions
-    Reading Time: 5 minutes
-    Recommended: File verification and overview
+    Content: All 17 files listed with descriptions
     Status: MANIFEST VERIFICATION
+
+════════════════════════════════════════════════════════════════════════════════
+
+WHAT'S NEW IN v1.1.0
+════════════════════════════════════════════════════════════════════════════════
+
+• fetch_realtime_data(lookback_days) — fetches up to today and patches the
+  latest bar with a live quote via yf.Ticker.fast_info
+• Fixed yfinance 1.3.0 MultiIndex column handling in both
+  automated_trading_system.py and backtest_framework.py
+• Fixed pandas frequency alias 4H → 4h (required in pandas 2.2+)
+• Added test_examples.py (12 tests) and test_readme_examples.py (4 tests)
+• Added .gitignore; project is now version-controlled on GitHub
 
 ════════════════════════════════════════════════════════════════════════════════
 
 SUMMARY OF COMPLETE PACKAGE
 ════════════════════════════════════════════════════════════════════════════════
 
-TOTAL FILES IN PACKAGE:    14 files
-TOTAL PACKAGE SIZE:        201+ KB
-TOTAL CODE LINES:          2000+ lines
+TOTAL FILES IN PACKAGE:    17 files
+TOTAL CODE LINES:          2400+ lines
 TOTAL DOCUMENTATION:       60+ KB
+GITHUB:                    https://github.com/edwinlau67/automated-trading-systems
 STATUS:                    ✅ COMPLETE & READY
 
 FILE BREAKDOWN
 ────────────────────────────────────────────────────────────────────────────────
 
-Python Code Files:         4 files (automated_trading_system.py, trading_system.py,
+Python Source Files:       4 files (automated_trading_system.py, trading_system.py,
                                    signal_generator.py, backtest_framework.py)
-                          
-Configuration Files:       1 file (requirements.txt)
+
+Test Files:                2 files (test_examples.py, test_readme_examples.py)
+
+Configuration Files:       2 files (requirements.txt, .gitignore)
 
 Documentation Files:       6 files (TRADING_SYSTEM_GUIDE.md, QUICK_REFERENCE.md,
                                    PROJECT_STRUCTURE.md, PROJECT_SUMMARY.txt,
@@ -154,7 +178,7 @@ Documentation Files:       6 files (TRADING_SYSTEM_GUIDE.md, QUICK_REFERENCE.md,
 
 Getting Started Files:     2 files (START_HERE.txt, README.md)
 
-Reference Files:           2 files (FILES_READY_FOR_DOWNLOAD.txt, this file)
+Reference Files:           1 file  (this file)
 
 WHAT EACH FILE CONTAINS
 ════════════════════════════════════════════════════════════════════════════════
@@ -163,10 +187,11 @@ CORE FUNCTIONALITY (4 Python files):
 
 automated_trading_system.py:
   ├─ AutomatedTradingSystem class (main orchestrator)
-  ├─ Data fetching from Yahoo Finance
-  ├─ Indicator calculation
-  ├─ Signal generation
-  ├─ Trade execution
+  ├─ fetch_data(start_date, end_date) — historical data
+  ├─ fetch_realtime_data(lookback_days) — live data with today's bar
+  ├─ Indicator calculation (12+ indicators)
+  ├─ Signal generation with confidence scoring
+  ├─ Trade execution and position management
   ├─ Backtesting framework
   └─ Reporting and metrics
 
@@ -176,8 +201,7 @@ trading_system.py:
   ├─ Trade class (completed trades)
   ├─ RiskManager (risk control)
   ├─ OrderManager (order handling)
-  ├─ TradeLogger (trade analysis)
-  └─ Supporting data structures
+  └─ TradeLogger (trade analysis)
 
 signal_generator.py:
   ├─ SignalGenerator class (main signal engine)
@@ -189,79 +213,32 @@ signal_generator.py:
   └─ Divergence detection
 
 backtest_framework.py:
-  ├─ Advanced IndicatorCalculator
-  ├─ BacktestEngine (simulation)
-  ├─ Technical indicators
-  ├─ Performance metrics
-  └─ Utility functions
+  ├─ TechnicalIndicators (SMA, EMA, MACD, RSI, ATR, ADX, Bollinger, Stochastic)
+  ├─ MultiTimeframeAnalyzer (daily, weekly, 4h)
+  ├─ BacktestEngine (trade simulation)
+  └─ Performance metrics (Sharpe, drawdown, profit factor)
 
-DOCUMENTATION CONTENT:
+TEST SUITES:
 
-START_HERE.txt:
-  • 6-step getting started guide
-  • Installation instructions
-  • Running first backtest
-  • Understanding results
-  • Learning path
-  • Pro tips
+test_examples.py (12 tests):
+  ├─ Import check
+  ├─ Basic backtest
+  ├─ Portfolio summary
+  ├─ Trade history
+  ├─ Generate current signal
+  ├─ Custom config backtest
+  ├─ Manual signal execution
+  ├─ Multi-stock comparison
+  ├─ Indicator values
+  ├─ Signals history
+  ├─ Realtime data fetch (today's bar assertion)
+  └─ Realtime signal generation (live price)
 
-README.md:
-  • Project overview
-  • Feature summary
-  • Quick start example
-  • Code samples
-  • Key features list
-  • Project goals
-
-TRADING_SYSTEM_GUIDE.md:
-  • Complete installation guide
-  • System architecture
-  • Component documentation
-  • Configuration options
-  • 10+ usage examples
-  • Advanced features
-  • Troubleshooting section
-
-PROJECT SUMMARY.txt:
-  • Project statistics
-  • Technical architecture
-  • Indicators implemented
-  • Performance metrics
-  • Risk management features
-  • Success criteria
-  • Project timeline
-
-QUICK_REFERENCE.md:
-  • Common tasks with code
-  • Configuration parameters
-  • Indicator reference
-  • Class methods
-  • Troubleshooting tips
-  • File structure
-
-SYSTEM_OVERVIEW.txt:
-  • Feature checklist
-  • Technical indicators list
-  • Risk management features
-  • Capabilities overview
-  • Learning path
-  • Limitations
-
-PROJECT_STRUCTURE.md:
-  • Directory structure
-  • Component descriptions
-  • Data flow diagrams
-  • Architecture explanation
-  • Workflow descriptions
-  • Configuration system
-
-DELIVERY_SUMMARY.md:
-  • Delivery information
-  • Getting started steps
-  • File descriptions
-  • Quick start guide
-  • Next steps
-  • Success criteria
+test_readme_examples.py (4 tests):
+  ├─ Simple backtest (MSFT)
+  ├─ Multi-stock comparison (AAPL/MSFT/GOOGL/TSLA)
+  ├─ Custom configuration (TSLA 2-year)
+  └─ Real-time signal (AAPL)
 
 ═══════════════════════════════════════════════════════════════════════════════
 
@@ -269,31 +246,35 @@ VERIFICATION CHECKLIST - CONFIRM YOU HAVE ALL FILES
 ════════════════════════════════════════════════════════════════════════════════
 
 PYTHON SOURCE CODE (4 files):
-  ☐ automated_trading_system.py (20 KB)
-  ☐ trading_system.py (21 KB)
-  ☐ signal_generator.py (17 KB)
-  ☐ backtest_framework.py (18 KB)
+  ☐ automated_trading_system.py (21 KB, 585 lines)
+  ☐ trading_system.py (20 KB, 571 lines)
+  ☐ signal_generator.py (16 KB, 486 lines)
+  ☐ backtest_framework.py (17 KB, 437 lines)
 
-CONFIGURATION (1 file):
-  ☐ requirements.txt (172 B)
+TEST FILES (2 files):
+  ☐ test_examples.py (9.5 KB, 231 lines)
+  ☐ test_readme_examples.py (2.9 KB, 98 lines)
+
+CONFIGURATION (2 files):
+  ☐ requirements.txt
+  ☐ .gitignore
 
 GETTING STARTED (2 files):
-  ☐ START_HERE.txt (13 KB)
-  ☐ README.md (14 KB)
+  ☐ START_HERE.txt
+  ☐ README.md
 
 DOCUMENTATION (6 files):
-  ☐ TRADING_SYSTEM_GUIDE.md (20 KB)
-  ☐ QUICK_REFERENCE.md (8.6 KB)
-  ☐ PROJECT_STRUCTURE.md (16 KB)
-  ☐ PROJECT_SUMMARY.txt (24 KB)
-  ☐ SYSTEM_OVERVIEW.txt (18 KB)
-  ☐ DELIVERY_SUMMARY.md (14 KB)
+  ☐ TRADING_SYSTEM_GUIDE.md
+  ☐ QUICK_REFERENCE.md
+  ☐ PROJECT_STRUCTURE.md
+  ☐ PROJECT_SUMMARY.txt
+  ☐ SYSTEM_OVERVIEW.txt
+  ☐ DELIVERY_SUMMARY.md
 
-REFERENCE (2 files):
-  ☐ FILES_READY_FOR_DOWNLOAD.txt (16 KB)
+REFERENCE (1 file):
   ☐ 00_COMPLETE_FILE_MANIFEST.txt (This file)
 
-TOTAL: 14 files ✓
+TOTAL: 17 files ✓
 
 ═══════════════════════════════════════════════════════════════════════════════
 
@@ -324,127 +305,59 @@ For Complete Mastery (4-5+ hours):
   7. SYSTEM_OVERVIEW.txt (20 min)
   8. QUICK_REFERENCE.md (20 min)
   9. Study Python source code (60+ min)
-  10. Install & extensive testing (90+ min)
+  10. Install & run test suites (30 min)
   11. Build custom strategies (ongoing)
 
 ═══════════════════════════════════════════════════════════════════════════════
 
-FILE DOWNLOAD INSTRUCTIONS
+QUICK START
 ════════════════════════════════════════════════════════════════════════════════
 
-ALL FILES ARE LOCATED IN: /mnt/user-data/outputs/
+1. Clone from GitHub:
+   git clone https://github.com/edwinlau67/automated-trading-systems.git
+   cd automated-trading-systems
 
-DOWNLOAD OPTIONS:
-
-Option 1: Download All Files At Once
-  • Download entire folder if your platform supports it
-  • Or download each file individually
-
-Option 2: Download By Category
-
-  ESSENTIAL (download first):
-    1. requirements.txt
-    2. automated_trading_system.py
-    3. trading_system.py
-    4. signal_generator.py
-    5. backtest_framework.py
-
-  GETTING STARTED (read first):
-    6. START_HERE.txt
-    7. README.md
-
-  DOCUMENTATION (reference):
-    8. TRADING_SYSTEM_GUIDE.md
-    9. QUICK_REFERENCE.md
-
-  PROJECT INFO (understand structure):
-    10. PROJECT_STRUCTURE.md
-    11. PROJECT_SUMMARY.txt
-    12. SYSTEM_OVERVIEW.txt
-
-  ADDITIONAL:
-    13. DELIVERY_SUMMARY.md
-    14. FILES_READY_FOR_DOWNLOAD.txt
-
-═══════════════════════════════════════════════════════════════════════════════
-
-VERIFICATION THAT ALL FILES ARE PRESENT
-════════════════════════════════════════════════════════════════════════════════
-
-✅ 4 Python source code files (2000+ lines total)
-✅ 1 Configuration file (requirements.txt)
-✅ 2 Getting started guides
-✅ 6 Comprehensive documentation files
-✅ 2 Reference/manifest files
-
-TOTAL: 14 FILES ✅
-
-ALL FILES ARE PRODUCTION READY AND FULLY FUNCTIONAL
-
-═══════════════════════════════════════════════════════════════════════════════
-
-IF YOU'RE MISSING FILES
-════════════════════════════════════════════════════════════════════════════════
-
-If your download doesn't include all 14 files:
-
-1. Check the /mnt/user-data/outputs/ folder directly
-2. Download the following ESSENTIAL files first:
-   - automated_trading_system.py
-   - trading_system.py
-   - signal_generator.py
-   - backtest_framework.py
-   - requirements.txt
-
-3. Then download the documentation files:
-   - START_HERE.txt
-   - README.md
-   - TRADING_SYSTEM_GUIDE.md
-
-4. Contact support if files are still missing
-
-═══════════════════════════════════════════════════════════════════════════════
-
-QUICK START AFTER DOWNLOAD
-════════════════════════════════════════════════════════════════════════════════
-
-1. Save all 14 files to same folder: C:\TradingSystem or ~/trading_system
-
-2. Open terminal/command prompt in that folder
+2. Create and activate virtual environment:
+   python -m venv venv
+   source venv/bin/activate  # Windows: venv\Scripts\activate
 
 3. Install dependencies:
    pip install -r requirements.txt
 
-4. Verify installation:
-   python -c "import pandas; import yfinance; print('✓ Ready')"
-
-5. Read START_HERE.txt for detailed instructions
-
-6. Run first backtest:
+4. Run first backtest:
    python
    >>> from automated_trading_system import AutomatedTradingSystem
    >>> system = AutomatedTradingSystem(10000, "AAPL")
    >>> system.backtest("2023-06-01", "2024-01-31")
    >>> system.print_detailed_results()
 
-7. Explore and experiment!
+5. Run with live data:
+   >>> system = AutomatedTradingSystem(10000, "AAPL")
+   >>> system.fetch_realtime_data(lookback_days=365)
+   >>> system.calculate_indicators()
+   >>> signal = system.generate_signals()
+
+6. Run test suites:
+   python test_examples.py
+   python test_readme_examples.py
 
 ═══════════════════════════════════════════════════════════════════════════════
 
 STATUS: ✅ COMPLETE PACKAGE READY
 ════════════════════════════════════════════════════════════════════════════════
 
-Total Files:              14 files ✅
-Total Size:              201+ KB ✅
-Code Quality:            Production Ready ✅
-Documentation:           Comprehensive ✅
-Status:                  COMPLETE ✅
-
-All files are present and ready for download!
+Total Files:              17 files ✅
+Total Code Lines:         2400+ lines ✅
+Test Coverage:            16 tests, all passing ✅
+Code Quality:             Production Ready ✅
+Documentation:            Comprehensive ✅
+Version Control:          GitHub ✅
+Status:                   COMPLETE ✅
 
 ═══════════════════════════════════════════════════════════════════════════════
 
-Questions? Check the documentation files included in this package.
+Questions? Check the documentation files or visit:
+https://github.com/edwinlau67/automated-trading-systems
 
 Good luck with your trading system! 🚀📈
 
