@@ -1,3 +1,6 @@
+import os
+import json
+import csv
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
@@ -5,6 +8,15 @@ import yfinance as yf
 from typing import Dict, List, Optional, Tuple
 import warnings
 warnings.filterwarnings('ignore')
+
+# ── Data directory paths (relative to project root) ───────────────────────────
+_PROJECT_ROOT    = os.path.dirname(os.path.dirname(__file__))
+_DIR_CACHE       = os.path.join(_PROJECT_ROOT, "data", "cache")
+_DIR_BACKTEST    = os.path.join(_PROJECT_ROOT, "data", "backtest_results")
+_DIR_EXPORTS     = os.path.join(_PROJECT_ROOT, "data", "exports")
+
+for _d in (_DIR_CACHE, _DIR_BACKTEST, _DIR_EXPORTS):
+    os.makedirs(_d, exist_ok=True)
 
 from src.trading_system import (
     PortfolioManager, RiskManager, OrderManager, TradeLogger,
@@ -68,13 +80,24 @@ class AutomatedTradingSystem:
         try:
             log.info("Fetching data  ticker=%s  %s -> %s", self.ticker, start_date, end_date)
 
-            # Fetch daily data
-            daily_data = yf.download(
-                self.ticker,
-                start=start_date,
-                end=end_date,
-                progress=False
+            # ── Cache lookup ───────────────────────────────────────────────────
+            cache_file = os.path.join(
+                _DIR_CACHE, f"{self.ticker}_{start_date}_{end_date}.csv"
             )
+            if os.path.exists(cache_file):
+                daily_data = pd.read_csv(cache_file, index_col=0, parse_dates=True)
+                log.info("Loaded from cache  %s", os.path.basename(cache_file))
+            else:
+                daily_data = yf.download(
+                    self.ticker, start=start_date, end=end_date, progress=False
+                )
+                if daily_data.empty:
+                    log.error("No data returned for %s", self.ticker)
+                    return False
+                if isinstance(daily_data.columns, pd.MultiIndex):
+                    daily_data.columns = daily_data.columns.get_level_values(0)
+                daily_data.to_csv(cache_file)
+                log.info("Cached to %s", os.path.basename(cache_file))
 
             if daily_data.empty:
                 log.error("No data returned for %s", self.ticker)
@@ -372,9 +395,10 @@ class AutomatedTradingSystem:
         if self.in_position and self.position_id:
             final_price = df.iloc[-1]['Close']
             self.close_position("Backtest End", final_price)
-        
-        # Return statistics
-        return self.get_backtest_results()
+
+        results = self.get_backtest_results()
+        self._save_backtest_results(results, start_date, end_date)
+        return results
     
     def get_backtest_results(self) -> Dict:
         """Get detailed backtest results"""
@@ -391,9 +415,98 @@ class AutomatedTradingSystem:
         return results
     
     # ========================================================================
+    # DATA / EXPORT HELPERS
+    # ========================================================================
+
+    def _save_backtest_results(self, results: Dict, start_date: str, end_date: str) -> str:
+        """Persist backtest results to data/backtest_results/ as JSON."""
+        ts   = datetime.now().strftime("%Y%m%d_%H%M%S")
+        name = f"{self.ticker}_{start_date}_{end_date}_{ts}.json"
+        path = os.path.join(_DIR_BACKTEST, name)
+
+        # Make the dict JSON-serialisable (convert any non-serialisable values)
+        def _clean(obj):
+            if isinstance(obj, dict):
+                return {k: _clean(v) for k, v in obj.items()}
+            if isinstance(obj, (list, tuple)):
+                return [_clean(i) for i in obj]
+            if isinstance(obj, float) and (obj != obj or obj in (float('inf'), float('-inf'))):
+                return None  # NaN / inf → null
+            return obj
+
+        payload = {
+            "ticker"     : self.ticker,
+            "start_date" : start_date,
+            "end_date"   : end_date,
+            "generated"  : datetime.now().isoformat(),
+            "results"    : _clean(results),
+        }
+        with open(path, "w") as f:
+            json.dump(payload, f, indent=2, default=str)
+
+        log.info("Backtest results saved  %s", os.path.basename(path))
+        return path
+
+    def export_trades(self) -> str:
+        """Export closed trades to data/exports/ as CSV. Returns the file path."""
+        closed = self.portfolio.closed_positions
+        if not closed:
+            log.warning("No closed trades to export for %s", self.ticker)
+            return ""
+
+        ts   = datetime.now().strftime("%Y%m%d_%H%M%S")
+        name = f"{self.ticker}_trades_{ts}.csv"
+        path = os.path.join(_DIR_EXPORTS, name)
+
+        fieldnames = [
+            "trade_id", "ticker", "side",
+            "entry_date", "exit_date", "holding_days",
+            "entry_price", "exit_price",
+            "quantity", "profit_loss", "return_pct",
+            "stop_loss", "take_profit",
+            "entry_signal", "exit_signal", "win",
+        ]
+        with open(path, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            for t in sorted(closed, key=lambda x: x.entry_date):
+                writer.writerow({
+                    "trade_id"    : t.trade_id,
+                    "ticker"      : t.ticker,
+                    "side"        : t.side,
+                    "entry_date"  : t.entry_date.strftime("%Y-%m-%d %H:%M:%S") if t.entry_date else "",
+                    "exit_date"   : t.exit_date.strftime("%Y-%m-%d %H:%M:%S")  if t.exit_date  else "",
+                    "holding_days": t.holding_days,
+                    "entry_price" : round(t.entry_price, 4),
+                    "exit_price"  : round(t.exit_price,  4),
+                    "quantity"    : round(t.quantity, 4),
+                    "profit_loss" : round(t.profit_loss, 4),
+                    "return_pct"  : round(t.return_pct,  4),
+                    "stop_loss"   : round(t.stop_loss,   4),
+                    "take_profit" : round(t.take_profit, 4),
+                    "entry_signal": t.entry_signal,
+                    "exit_signal" : t.exit_signal,
+                    "win"         : t.win,
+                })
+
+        log.info("Trades exported  %d rows  %s", len(closed), os.path.basename(path))
+        return path
+
+    def clear_cache(self, ticker: str = None) -> int:
+        """Delete cached CSV files. Pass ticker to clear only that ticker, or None for all."""
+        removed = 0
+        prefix  = f"{ticker or ''}"
+        for fname in os.listdir(_DIR_CACHE):
+            if fname.startswith(prefix) and fname.endswith(".csv"):
+                os.remove(os.path.join(_DIR_CACHE, fname))
+                removed += 1
+        log.info("Cache cleared  %d file(s)  ticker=%s", removed, ticker or "all")
+        return removed
+
+    # ========================================================================
     # REPORTING
     # ========================================================================
-    
+
     def print_portfolio_status(self):
         """Print current portfolio status"""
         

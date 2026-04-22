@@ -6,3 +6,6 @@ runs/
 *.png
 logs/*.log
 logs/*.log.*
+data/cache/*.csv
+data/backtest_results/*.json
+data/exports/*.csv

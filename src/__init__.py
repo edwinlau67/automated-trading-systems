@@ -22,4 +22,6 @@ __all__ = [
     "plot_risk_management", "plot_all",
     "generate_report",
     "get_logger",
+    # AutomatedTradingSystem convenience methods are accessed via the instance;
+    # the data-directory constants are module-private.
 ]

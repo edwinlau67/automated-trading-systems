@@ -120,6 +120,9 @@ class TestFetchDataIntegration:
         assert not system.data["daily"].empty
 
     def test_fetch_data_returns_false_on_empty(self, system):
-        with patch("yfinance.download", return_value=pd.DataFrame()):
+        # Patch both yfinance and the cache-file existence check so the empty
+        # DataFrame propagates all the way through fetch_data.
+        with patch("yfinance.download", return_value=pd.DataFrame()), \
+             patch("src.automated_trading_system.os.path.exists", return_value=False):
             ok = system.fetch_data("2023-01-01", "2024-01-01")
         assert not ok
