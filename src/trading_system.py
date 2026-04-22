@@ -7,6 +7,11 @@ from dataclasses import dataclass, field
 import json
 from abc import ABC, abstractmethod
 
+from src.logger import get_logger
+
+_log_portfolio = get_logger("portfolio")
+_log_orders    = get_logger("orders")
+
 # ============================================================================
 # CORE DATA STRUCTURES
 # ============================================================================
@@ -135,7 +140,8 @@ class PortfolioManager:
         
         # Check if we have enough capital
         if position_cost > self.cash + self.margin_available:
-            print(f"✗ Insufficient capital to open position in {ticker}")
+            _log_portfolio.warning("Insufficient capital  ticker=%s  required=$%.2f  available=$%.2f",
+                                   ticker, position_cost, self.cash + self.margin_available)
             return None
         
         # Deduct from available capital
@@ -166,14 +172,16 @@ class PortfolioManager:
         self.positions[position_id] = position
         self.position_counter += 1
         
-        print(f"✓ Opened {side} position in {ticker}: {quantity} @ ${entry_price:.2f}")
+        _log_portfolio.info("Position opened  %s  %s  qty=%.2f  entry=$%.2f  stop=$%.2f  target=$%.2f",
+                            ticker, side, quantity, entry_price,
+                            stop_loss or 0, take_profit or 0)
         return position
     
     def close_position(self, position_id: str, exit_price: float, exit_signal: str = "") -> Optional[Trade]:
         """Close an open position"""
         
         if position_id not in self.positions:
-            print(f"✗ Position {position_id} not found")
+            _log_portfolio.warning("Position not found  id=%s", position_id)
             return None
         
         position = self.positions[position_id]
@@ -228,8 +236,10 @@ class PortfolioManager:
         position.status = PositionStatus.CLOSED
         del self.positions[position_id]
         
-        win_loss = "✓ WIN" if profit_loss > 0 else "✗ LOSS"
-        print(f"{win_loss}: Closed {position.side} position in {position.ticker}: ${profit_loss:+.2f} ({return_pct:+.2f}%)")
+        outcome = "WIN" if profit_loss > 0 else "LOSS"
+        _log_portfolio.info("Position closed  %s  %s  %s  exit=$%.2f  pnl=$%+.2f  return=%+.2f%%  days=%d  reason=%s",
+                            position.ticker, position.side, outcome,
+                            exit_price, profit_loss, return_pct, holding_days, exit_signal)
         
         return trade
     
@@ -436,7 +446,8 @@ class OrderManager:
         self.order_queue.append(order)
         self.order_counter += 1
         
-        print(f"📋 Order placed: {side.value} {quantity} {ticker} @ ${price:.2f}")
+        _log_orders.info("Order placed  %s  %s  qty=%s  price=$%.2f  id=%s",
+                         ticker, side.value, quantity, price, order_id)
         return order
     
     def execute_order(self, order: Order, execution_price: float) -> bool:
@@ -449,7 +460,9 @@ class OrderManager:
         self.filled_orders.append(order)
         self.order_queue.remove(order)
         
-        print(f"✓ Order executed: {order.side.value} {order.quantity} {order.ticker} @ ${execution_price:.2f}")
+        _log_orders.info("Order filled   %s  %s  qty=%s  price=$%.2f  id=%s",
+                         order.ticker, order.side.value, order.quantity,
+                         execution_price, order.order_id)
         return True
     
     def cancel_order(self, order_id: str) -> bool:
@@ -459,7 +472,7 @@ class OrderManager:
             if order.order_id == order_id:
                 order.status = "CANCELLED"
                 self.order_queue.remove(order)
-                print(f"✗ Order cancelled: {order_id}")
+                _log_orders.info("Order cancelled  id=%s", order_id)
                 return True
         
         return False

@@ -12,6 +12,9 @@ from src.trading_system import (
 )
 from src.signal_generator import SignalGenerator, Signal, MultiTimeframeSignalAnalyzer
 from src.indicator_calculator import IndicatorCalculator
+from src.logger import get_logger
+
+log = get_logger("orchestrator")
 
 # ============================================================================
 # AUTOMATED TRADING SYSTEM
@@ -52,10 +55,8 @@ class AutomatedTradingSystem:
         self.in_position = False
         self.position_id = None
         
-        print(f"✓ Trading System Initialized")
-        print(f"  Capital: ${initial_capital:,.2f}")
-        print(f"  Ticker: {ticker}")
-        print(f"  Max Positions: {max_positions}")
+        log.info("Trading system initialised  ticker=%s  capital=$%.2f  max_positions=%d",
+                 ticker, initial_capital, max_positions)
     
     # ========================================================================
     # DATA MANAGEMENT
@@ -65,8 +66,8 @@ class AutomatedTradingSystem:
         """Fetch historical data from Yahoo Finance"""
         
         try:
-            print(f"\n📊 Fetching data for {self.ticker}...")
-            
+            log.info("Fetching data  ticker=%s  %s -> %s", self.ticker, start_date, end_date)
+
             # Fetch daily data
             daily_data = yf.download(
                 self.ticker,
@@ -74,9 +75,9 @@ class AutomatedTradingSystem:
                 end=end_date,
                 progress=False
             )
-            
+
             if daily_data.empty:
-                print(f"✗ No data found for {self.ticker}")
+                log.error("No data returned for %s", self.ticker)
                 return False
 
             if isinstance(daily_data.columns, pd.MultiIndex):
@@ -101,14 +102,12 @@ class AutomatedTradingSystem:
                 'Volume': 'sum'
             }).dropna() if len(daily_data) > 50 else pd.DataFrame()
             
-            print(f"✓ Data fetched successfully")
-            print(f"  Daily bars: {len(daily_data)}")
-            print(f"  Date range: {daily_data.index[0].date()} to {daily_data.index[-1].date()}")
-            
+            log.info("Data fetched  bars=%d  range=%s -> %s",
+                     len(daily_data), daily_data.index[0].date(), daily_data.index[-1].date())
             return True
-        
+
         except Exception as e:
-            print(f"✗ Error fetching data: {e}")
+            log.exception("Error fetching data for %s: %s", self.ticker, e)
             return False
 
     def fetch_realtime_data(self, lookback_days: int = 365) -> bool:
@@ -134,7 +133,7 @@ class AutomatedTradingSystem:
                     new_row['Close'] = live_price
                     new_row.name = today
                     self.data['daily'] = pd.concat([daily, new_row.to_frame().T])
-                print(f"  Live price: ${live_price:.2f}")
+                log.debug("Live price patched  %s  $%.2f", self.ticker, live_price)
         except Exception:
             pass  # Non-fatal; historical close is still usable
 
@@ -144,19 +143,18 @@ class AutomatedTradingSystem:
         """Calculate all technical indicators for all timeframes"""
         
         try:
-            print(f"\n📈 Calculating indicators...")
-            
+            log.info("Calculating indicators  ticker=%s", self.ticker)
+
             for timeframe, df in self.data.items():
                 if df.empty:
                     continue
-                
                 self.indicators[timeframe] = IndicatorCalculator.calculate_all(df.copy())
-            
-            print(f"✓ Indicators calculated for {len(self.indicators)} timeframes")
+
+            log.info("Indicators ready  timeframes=%s", list(self.indicators.keys()))
             return True
-        
+
         except Exception as e:
-            print(f"✗ Error calculating indicators: {e}")
+            log.exception("Error calculating indicators: %s", e)
             return False
     
     # ========================================================================
@@ -231,7 +229,7 @@ class AutomatedTradingSystem:
         
         # Check if already in position
         if self.in_position:
-            print(f"⚠ Already in position, skipping signal")
+            log.warning("Already in position — signal skipped  %s", signal.signal_type)
             return False
         
         # Calculate position size (shares)
@@ -257,7 +255,7 @@ class AutomatedTradingSystem:
         )
         
         if not valid:
-            print(f"✗ Trade validation failed: {reason}")
+            log.warning("Trade validation failed  %s  reason=%s", signal.ticker, reason)
             return False
         
         # Open position
@@ -276,10 +274,10 @@ class AutomatedTradingSystem:
             self.position_id = position.position_id
             self.last_signal = signal
             
-            print(f"\n✓ Trade executed successfully")
-            print(f"  Position ID: {position.position_id}")
-            print(f"  Size: {position_size:.2f} shares")
-            print(f"  Risk: ${risk_amount:.2f}")
+            log.info("Trade opened  %s  %s  shares=%.2f  entry=$%.2f  stop=$%.2f  target=$%.2f  risk=$%.2f",
+                     signal.ticker, "LONG" if signal.signal_type == "BUY" else "SHORT",
+                     position_size, signal.entry_price, signal.stop_loss,
+                     signal.take_profit, risk_amount)
             
             return True
         

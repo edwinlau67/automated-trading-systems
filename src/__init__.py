@@ -10,6 +10,7 @@ from src.visualization import (
     plot_risk_management, plot_all,
 )
 from src.report import generate_report
+from src.logger import get_logger
 
 __all__ = [
     "AutomatedTradingSystem",
@@ -20,4 +21,5 @@ __all__ = [
     "plot_technical_indicators", "plot_signals", "plot_performance",
     "plot_risk_management", "plot_all",
     "generate_report",
+    "get_logger",
 ]

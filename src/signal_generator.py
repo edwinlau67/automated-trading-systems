@@ -4,6 +4,10 @@ from datetime import datetime
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 
+from src.logger import get_logger
+
+_log = get_logger("signals")
+
 # ============================================================================
 # SIGNAL STRUCTURES
 # ============================================================================
@@ -245,11 +249,12 @@ class SignalGenerator:
                 take_profit=take_profit,
                 reason=reasons
             )
-            
+            _log.debug("BUY signal  confidence=%.2f  entry=$%.2f  stop=$%.2f  target=$%.2f",
+                       signal.confidence, entry_price, stop_loss, take_profit)
             return signal
-        
+
         return None
-    
+
     def _analyze_sell_signal(self, snap: IndicatorSnapshot, df: pd.DataFrame, 
                              row_idx: int) -> Optional[Signal]:
         """Analyze conditions for SELL signal"""
@@ -373,11 +378,12 @@ class SignalGenerator:
                 take_profit=take_profit,
                 reason=reasons
             )
-            
+            _log.debug("SELL signal  confidence=%.2f  entry=$%.2f  stop=$%.2f  target=$%.2f",
+                       signal.confidence, entry_price, stop_loss, take_profit)
             return signal
-        
+
         return None
-    
+
     def get_signal_summary(self) -> Dict:
         """Get summary of signals generated"""
         
