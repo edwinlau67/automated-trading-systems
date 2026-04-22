@@ -68,7 +68,8 @@ class SignalGenerator:
         'volume': 0.15
     }
     
-    def __init__(self):
+    def __init__(self, confidence_threshold: float = 0.55):
+        self.confidence_threshold = confidence_threshold
         self.signal_history: List[Signal] = []
     
     def generate_signal(self, df: pd.DataFrame, current_row_idx: int, 
@@ -227,7 +228,7 @@ class SignalGenerator:
         
         confidence = sum(confidence_components)
         
-        if confidence >= 0.55:  # Threshold for BUY signal
+        if confidence >= self.confidence_threshold:
             # Calculate entry and stops
             entry_price = snap.close
             stop_loss = snap.close - (snap.atr * 2)
@@ -355,7 +356,7 @@ class SignalGenerator:
         
         confidence = sum(confidence_components)
         
-        if confidence >= 0.55:  # Threshold for SELL signal
+        if confidence >= self.confidence_threshold:
             # Calculate entry and stops
             entry_price = snap.close
             stop_loss = snap.close + (snap.atr * 2)

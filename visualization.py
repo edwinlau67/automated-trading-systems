@@ -629,7 +629,7 @@ def plot_all(system, prefix=""):
 # ──────────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    from automated_trading_system import AutomatedTradingSystem
+    from src.automated_trading_system import AutomatedTradingSystem
 
     ticker = "AAPL"
     system = AutomatedTradingSystem(

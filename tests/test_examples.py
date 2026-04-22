@@ -20,14 +20,14 @@ def run(label, fn):
 # 1. Import check
 # -------------------------------------------------------------------
 def test_import():
-    from automated_trading_system import AutomatedTradingSystem
+    from src.automated_trading_system import AutomatedTradingSystem
 run("Import AutomatedTradingSystem", test_import)
 
 # -------------------------------------------------------------------
 # 2. Basic backtest
 # -------------------------------------------------------------------
 def test_backtest():
-    from automated_trading_system import AutomatedTradingSystem
+    from src.automated_trading_system import AutomatedTradingSystem
     system = AutomatedTradingSystem(initial_capital=10000, ticker="AAPL")
     results_data = system.backtest(start_date="2023-06-01", end_date="2024-01-31")
     assert results_data is not None, "backtest returned None"
@@ -38,7 +38,7 @@ run("Basic backtest (AAPL)", test_backtest)
 # 3. Portfolio summary
 # -------------------------------------------------------------------
 def test_portfolio_summary():
-    from automated_trading_system import AutomatedTradingSystem
+    from src.automated_trading_system import AutomatedTradingSystem
     system = AutomatedTradingSystem(initial_capital=10000, ticker="AAPL")
     system.backtest(start_date="2023-06-01", end_date="2024-01-31")
     summary = system.portfolio.get_portfolio_summary()
@@ -51,7 +51,7 @@ run("Portfolio summary", test_portfolio_summary)
 # 4. Trade history
 # -------------------------------------------------------------------
 def test_trade_history():
-    from automated_trading_system import AutomatedTradingSystem
+    from src.automated_trading_system import AutomatedTradingSystem
     system = AutomatedTradingSystem(initial_capital=10000, ticker="AAPL")
     system.backtest(start_date="2023-06-01", end_date="2024-01-31")
     count = 0
@@ -70,7 +70,7 @@ run("Trade history", test_trade_history)
 # 5. Generate current signal
 # -------------------------------------------------------------------
 def test_generate_signal():
-    from automated_trading_system import AutomatedTradingSystem
+    from src.automated_trading_system import AutomatedTradingSystem
     system = AutomatedTradingSystem(initial_capital=10000, ticker="AAPL")
     system.fetch_data(start_date="2024-01-01", end_date="2024-06-30")
     system.calculate_indicators()
@@ -86,7 +86,7 @@ run("Generate current signal", test_generate_signal)
 # 6. Custom configuration backtest
 # -------------------------------------------------------------------
 def test_custom_config():
-    from automated_trading_system import AutomatedTradingSystem
+    from src.automated_trading_system import AutomatedTradingSystem
     system = AutomatedTradingSystem(
         initial_capital=50000,
         ticker="TSLA",
@@ -103,8 +103,8 @@ run("Custom config backtest (TSLA)", test_custom_config)
 # 7. Manual signal execution
 # -------------------------------------------------------------------
 def test_manual_signal():
-    from automated_trading_system import AutomatedTradingSystem
-    from signal_generator import Signal
+    from src.automated_trading_system import AutomatedTradingSystem
+    from src.signal_generator import Signal
     from datetime import datetime
     system = AutomatedTradingSystem(initial_capital=10000, ticker="AAPL")
     system.fetch_data(start_date="2024-01-01", end_date="2024-06-30")
@@ -127,7 +127,7 @@ run("Manual signal execution", test_manual_signal)
 # 8. Multi-stock comparison
 # -------------------------------------------------------------------
 def test_multi_stock():
-    from automated_trading_system import AutomatedTradingSystem
+    from src.automated_trading_system import AutomatedTradingSystem
     res = {}
     for ticker in ["AAPL", "MSFT", "GOOGL"]:
         system = AutomatedTradingSystem(initial_capital=10000, ticker=ticker)
@@ -147,7 +147,7 @@ run("Multi-stock comparison (AAPL/MSFT/GOOGL)", test_multi_stock)
 # 9. Indicator values
 # -------------------------------------------------------------------
 def test_indicators():
-    from automated_trading_system import AutomatedTradingSystem
+    from src.automated_trading_system import AutomatedTradingSystem
     system = AutomatedTradingSystem(initial_capital=10000, ticker="AAPL")
     system.fetch_data(start_date="2024-01-01", end_date="2024-06-30")
     system.calculate_indicators()
@@ -164,7 +164,7 @@ run("Indicator values", test_indicators)
 # 10. Signals history
 # -------------------------------------------------------------------
 def test_signals_history():
-    from automated_trading_system import AutomatedTradingSystem
+    from src.automated_trading_system import AutomatedTradingSystem
     system = AutomatedTradingSystem(initial_capital=10000, ticker="AAPL")
     system.backtest(start_date="2023-06-01", end_date="2024-01-31")
     print(f"  Total Signals: {len(system.signals_history)}")
@@ -178,7 +178,7 @@ run("Signals history", test_signals_history)
 # 11. Realtime data fetch
 # -------------------------------------------------------------------
 def test_realtime_fetch():
-    from automated_trading_system import AutomatedTradingSystem
+    from src.automated_trading_system import AutomatedTradingSystem
     system = AutomatedTradingSystem(initial_capital=10000, ticker="AAPL")
     assert system.fetch_realtime_data(lookback_days=365), "fetch_realtime_data returned False"
     daily = system.data['daily']
@@ -194,7 +194,7 @@ run("Realtime data fetch (today's bar)", test_realtime_fetch)
 # 12. Realtime signal generation
 # -------------------------------------------------------------------
 def test_realtime_signal():
-    from automated_trading_system import AutomatedTradingSystem
+    from src.automated_trading_system import AutomatedTradingSystem
     system = AutomatedTradingSystem(initial_capital=10000, ticker="AAPL")
     system.fetch_realtime_data(lookback_days=365)
     system.calculate_indicators()

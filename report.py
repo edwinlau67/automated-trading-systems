@@ -349,7 +349,7 @@ def _adx_label(adx: float) -> str:
 # ── CLI demo ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    from automated_trading_system import AutomatedTradingSystem
+    from src.automated_trading_system import AutomatedTradingSystem
 
     ticker     = "AAPL"
     start_date = "2023-01-01"

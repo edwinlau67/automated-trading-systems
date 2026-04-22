@@ -1,0 +1,19 @@
+# Risk management profiles — override risk_management section of default_config.yml
+
+conservative:
+  max_positions: 3
+  max_position_size_pct: 0.03
+  max_daily_loss_pct: 0.01
+  description: "Low risk. Small positions, tight daily loss limit."
+
+moderate:
+  max_positions: 5
+  max_position_size_pct: 0.05
+  max_daily_loss_pct: 0.02
+  description: "Balanced risk/reward. Default profile."
+
+aggressive:
+  max_positions: 10
+  max_position_size_pct: 0.15
+  max_daily_loss_pct: 0.05
+  description: "Higher risk. Larger positions, wider loss tolerance."

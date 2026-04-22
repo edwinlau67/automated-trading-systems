@@ -1,0 +1,36 @@
+portfolio:
+  initial_capital: 10000
+  use_margin: false
+  margin_multiplier: 2.0
+
+risk_management:
+  max_positions: 5
+  max_position_size_pct: 0.05
+  max_daily_loss_pct: 0.02
+  max_correlation: 0.7
+
+indicators:
+  sma_periods: [20, 50, 200]
+  ema_periods: [12, 26]
+  rsi_period: 14
+  macd_fast: 12
+  macd_slow: 26
+  macd_signal: 9
+  atr_period: 14
+  adx_period: 14
+  bollinger_period: 20
+  bollinger_std: 2
+  stochastic_period: 14
+
+signals:
+  confidence_threshold: 0.55
+  trend_weight: 0.25
+  momentum_weight: 0.25
+  reversal_weight: 0.20
+  volatility_weight: 0.15
+  price_action_weight: 0.15
+
+backtesting:
+  default_timeframe: daily
+  supported_timeframes: [weekly, daily, 4h]
+  warmup_bars: 50

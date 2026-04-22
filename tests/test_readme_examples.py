@@ -2,7 +2,7 @@
 import sys
 import traceback
 import pandas as pd
-from automated_trading_system import AutomatedTradingSystem
+from src.automated_trading_system import AutomatedTradingSystem
 
 PASS = "✓"
 FAIL = "✗"
