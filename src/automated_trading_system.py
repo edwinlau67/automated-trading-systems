@@ -416,6 +416,16 @@ class AutomatedTradingSystem:
         print(f"  Unrealized:  ${summary['unrealized_pnl']:>12,.2f}")
         print(f"  Realized:    ${summary['realized_pnl']:>12,.2f}")
     
+    def save_report(self, start_date: str = "", end_date: str = "") -> str:
+        """Generate charts and a Markdown report in runs/<TICKER>_<timestamp>/. Returns folder path."""
+        from src.report import generate_report
+        return generate_report(self, start_date=start_date, end_date=end_date)
+
+    def save_charts(self, prefix: str = "") -> list:
+        """Save all four chart dashboards. Returns list of saved file paths."""
+        from src.visualization import plot_all
+        return plot_all(self, prefix=prefix)
+
     def print_detailed_results(self):
         """Print detailed backtest results"""
         

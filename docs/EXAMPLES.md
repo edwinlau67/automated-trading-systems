@@ -110,12 +110,11 @@ Run backtest, generate charts, and save a Markdown report.
 
 ```python
 from src.automated_trading_system import AutomatedTradingSystem
-from report import generate_report
 
 system = AutomatedTradingSystem(initial_capital=25000, ticker="NVDA")
 system.backtest("2023-01-01", "2024-01-01")
 
-report_path = generate_report(system, "2023-01-01", "2024-01-01")
+report_path = system.save_report("2023-01-01", "2024-01-01")
 print(f"Report saved to: {report_path}")
 ```
 

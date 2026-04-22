@@ -5,6 +5,11 @@ from src.trading_system import (
 )
 from src.signal_generator import SignalGenerator, Signal, MultiTimeframeSignalAnalyzer
 from src.indicator_calculator import IndicatorCalculator
+from src.visualization import (
+    plot_technical_indicators, plot_signals, plot_performance,
+    plot_risk_management, plot_all,
+)
+from src.report import generate_report
 
 __all__ = [
     "AutomatedTradingSystem",
@@ -12,4 +17,7 @@ __all__ = [
     "Position", "Trade", "OrderType", "OrderSide",
     "SignalGenerator", "Signal", "MultiTimeframeSignalAnalyzer",
     "IndicatorCalculator",
+    "plot_technical_indicators", "plot_signals", "plot_performance",
+    "plot_risk_management", "plot_all",
+    "generate_report",
 ]

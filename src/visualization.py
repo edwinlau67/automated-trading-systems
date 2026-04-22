@@ -629,6 +629,7 @@ def plot_all(system, prefix=""):
 # ──────────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
+    import sys, os; sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
     from src.automated_trading_system import AutomatedTradingSystem
 
     ticker = "AAPL"

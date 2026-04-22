@@ -2,7 +2,7 @@
 Generate a per-run folder with charts and a Markdown report.
 
 Usage:
-    from report import generate_report
+    from src.report import generate_report
     generate_report(system, start_date="2023-01-01", end_date="2024-01-01")
 
 Each call creates:
@@ -17,7 +17,7 @@ Each call creates:
 import os
 from datetime import datetime
 
-from visualization import (
+from src.visualization import (
     plot_technical_indicators,
     plot_signals,
     plot_performance,
@@ -349,6 +349,7 @@ def _adx_label(adx: float) -> str:
 # ── CLI demo ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
+    import sys, os; sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
     from src.automated_trading_system import AutomatedTradingSystem
 
     ticker     = "AAPL"

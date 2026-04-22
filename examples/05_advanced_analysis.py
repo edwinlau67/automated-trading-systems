@@ -4,7 +4,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from src.automated_trading_system import AutomatedTradingSystem
 from src.signal_generator import MultiTimeframeSignalAnalyzer
-from report import generate_report
 
 TICKER     = "AAPL"
 START_DATE = "2023-01-01"
@@ -50,5 +49,5 @@ print(f"  Profit Factor: {t['profit_factor']:.2f}")
 print(f"  Trades:        {t['total_trades']}")
 
 # ── Generate full report ───────────────────────────────────────────────────
-run_path = generate_report(system, start_date=START_DATE, end_date=END_DATE)
+run_path = system.save_report(start_date=START_DATE, end_date=END_DATE)
 print(f"\nFull report: {run_path}/report.md")

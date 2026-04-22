@@ -12,7 +12,9 @@ automated-trading-systems/
 │   ├── automated_trading_system.py  # Main orchestrator
 │   ├── trading_system.py            # Portfolio, risk, orders
 │   ├── signal_generator.py          # Signal scoring engine
-│   └── indicator_calculator.py      # 12+ technical indicators
+│   ├── indicator_calculator.py      # 12+ technical indicators
+│   ├── visualization.py             # Chart dashboards (4 panels)
+│   └── report.py                    # Per-run Markdown report generator
 ├── examples/                   # Runnable example scripts
 │   ├── 01_simple_backtest.py
 │   ├── 02_multi_stock_comparison.py
@@ -22,8 +24,6 @@ automated-trading-systems/
 ├── tests/                      # 65 unit + integration tests
 ├── config/                     # YAML configuration files
 ├── docs/                       # Full documentation
-├── report.py                   # Per-run Markdown report generator
-├── visualization.py            # Chart dashboard (4 panels)
 └── requirements.txt
 ```
 
@@ -66,6 +66,29 @@ if signals:
     s = signals[-1]
     print(f"{s.signal_type}  confidence={s.confidence:.1%}  entry=${s.entry_price:.2f}  stop=${s.stop_loss:.2f}  target=${s.take_profit:.2f}")
 ```
+
+### Save Charts + Report
+
+```python
+from src.automated_trading_system import AutomatedTradingSystem
+
+system = AutomatedTradingSystem(initial_capital=10000, ticker="AAPL")
+system.backtest("2023-01-01", "2024-01-01")
+
+# Save 4 chart PNGs + report.md in runs/AAPL_<timestamp>/
+run_path = system.save_report("2023-01-01", "2024-01-01")
+print(f"Report: {run_path}/report.md")
+
+# Or save charts only
+system.save_charts()
+```
+
+Output folder `runs/AAPL_<timestamp>/` contains:
+- `chart_indicators.png` — price, MAs, Bollinger, MACD, RSI, ADX, Stochastic
+- `chart_signals.png` — buy/sell markers, confidence bars, cumulative count
+- `chart_performance.png` — equity curve, drawdown, P&L distribution, monthly heatmap
+- `chart_risk.png` — position sizing, stop/target levels, daily P&L, R:R ratios
+- `report.md` — full Markdown report with all metrics and trade log
 
 ### Multi-Stock Comparison
 
