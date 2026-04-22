@@ -65,6 +65,8 @@ class Trade:
     exit_signal: str = ""
     holding_days: int = 0
     win: bool = False
+    stop_loss: float = 0.0
+    take_profit: float = 0.0
 
 @dataclass
 class Position:
@@ -213,7 +215,9 @@ class PortfolioManager:
             entry_signal=position.entry_signal,
             exit_signal=exit_signal,
             holding_days=holding_days,
-            win=profit_loss > 0
+            win=profit_loss > 0,
+            stop_loss=position.stop_loss,
+            take_profit=position.take_profit
         )
         
         self.trades.append(trade)

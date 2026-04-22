@@ -359,7 +359,7 @@ class AutomatedTradingSystem:
             print(f"⚠ Already in position, skipping signal")
             return False
         
-        # Calculate position size
+        # Calculate position size (shares)
         stop_loss_distance = abs(signal.entry_price - signal.stop_loss)
         risk_amount = self.portfolio.total_value * 0.02  # 2% risk per trade
         position_size = self.risk_manager.calculate_position_size(
@@ -367,6 +367,10 @@ class AutomatedTradingSystem:
             risk_amount,
             stop_loss_distance
         )
+        # Cap to max position size in share terms (calculate_position_size caps in
+        # dollars, not shares, so we re-cap here to avoid validate_trade rejection)
+        max_shares = (self.portfolio.total_value * self.risk_manager.max_position_size_pct) / signal.entry_price
+        position_size = min(position_size, max_shares)
         
         # Validate trade
         valid, reason = self.risk_manager.validate_trade(
