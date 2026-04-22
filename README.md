@@ -8,13 +8,16 @@ A Python-based automated trading system with multi-timeframe technical analysis,
 
 ```
 automated-trading-systems/
+├── START_HERE.txt              # Step-by-step getting started guide (read first!)
+├── PROJECT_STRUCTURE.md        # Full directory map and component guide
 ├── src/                        # Core library
 │   ├── automated_trading_system.py  # Main orchestrator
 │   ├── trading_system.py            # Portfolio, risk, orders
 │   ├── signal_generator.py          # Signal scoring engine
 │   ├── indicator_calculator.py      # 12+ technical indicators
 │   ├── visualization.py             # Chart dashboards (4 panels)
-│   └── report.py                    # Per-run Markdown report generator
+│   ├── report.py                    # Per-run Markdown report generator
+│   └── logger.py                    # Centralised logging setup
 ├── examples/                   # Runnable example scripts
 │   ├── 01_simple_backtest.py
 │   ├── 02_multi_stock_comparison.py
@@ -171,6 +174,8 @@ pytest tests/ -v
 
 | File | Contents |
 |------|---------|
+| `START_HERE.txt` | Step-by-step setup and first-run guide |
+| `PROJECT_STRUCTURE.md` | Full directory map and component descriptions |
 | `docs/TRADING_SYSTEM_GUIDE.md` | Complete user guide |
 | `docs/QUICK_REFERENCE.md` | Quick lookup for common tasks |
 | `docs/API_REFERENCE.md` | Full API reference |

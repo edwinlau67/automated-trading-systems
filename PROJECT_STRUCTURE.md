@@ -6,36 +6,34 @@
 **Version:** 1.0.0  
 **Status:** Complete & Production-Ready  
 **Created:** April 2026  
-**Language:** Python 3.8+  
-**Total Lines of Code:** 2000+  
-**Total Documentation:** 60+ KB  
+**Language:** Python 3.13+  
 
 ---
 
 ## 📁 Project Directory Structure
 
 ```
-automated-trading-system/
+automated-trading-systems/
 │
 ├── README.md                           # Quick start guide
-├── START_HERE.txt                      # Getting started (read first!)
+├── START_HERE.txt                      # Step-by-step getting started guide (read first!)
 ├── PROJECT_STRUCTURE.md                # This file
-│
 ├── requirements.txt                    # Python dependencies
 ├── .gitignore                          # Git ignore patterns
 │
 ├── src/                                # Source code
 │   ├── __init__.py
-│   ├── automated_trading_system.py     # Main orchestrator (553 lines)
-│   ├── trading_system.py               # Portfolio management (571 lines)
-│   ├── signal_generator.py             # Signal generation (486 lines)
-│   └── indicator_calculator.py         # Technical indicators (embedded)
+│   ├── automated_trading_system.py     # Main orchestrator (585 lines)
+│   ├── trading_system.py               # Portfolio management (588 lines)
+│   ├── signal_generator.py             # Signal generation (493 lines)
+│   ├── indicator_calculator.py         # Technical indicators (119 lines)
+│   ├── visualization.py                # Chart dashboards (648 lines)
+│   ├── report.py                       # Per-run report & chart output (368 lines)
+│   └── logger.py                       # Centralised logging setup (65 lines)
 │
 ├── docs/                               # Documentation
-│   ├── TRADING_SYSTEM_GUIDE.md         # Complete guide (20 KB)
-│   ├── QUICK_REFERENCE.md              # Quick reference (8.6 KB)
-│   ├── SYSTEM_OVERVIEW.txt             # Features overview (18 KB)
-│   ├── DELIVERY_SUMMARY.md             # Delivery info (14 KB)
+│   ├── TRADING_SYSTEM_GUIDE.md         # Complete guide
+│   ├── QUICK_REFERENCE.md              # Quick reference
 │   ├── API_REFERENCE.md                # Generated API docs
 │   ├── ARCHITECTURE.md                 # System architecture
 │   └── EXAMPLES.md                     # Code examples
@@ -47,13 +45,15 @@ automated-trading-system/
 │   ├── 04_signal_generation.py         # Generate real-time signals
 │   └── 05_advanced_analysis.py         # Advanced usage
 │
-├── tests/                              # Unit tests
+├── tests/                              # Unit & integration tests
 │   ├── test_trading_system.py
 │   ├── test_signal_generator.py
 │   ├── test_indicators.py
-│   └── test_portfolio.py
+│   ├── test_portfolio.py
+│   ├── test_examples.py
+│   └── test_readme_examples.py
 │
-├── data/                               # Data files
+├── data/                               # Data files (git-ignored content)
 │   ├── backtest_results/               # Backtest outputs
 │   ├── cache/                          # Cached market data
 │   └── exports/                        # Exported trades
@@ -67,6 +67,14 @@ automated-trading-system/
 │   ├── analysis.ipynb                  # Data analysis
 │   ├── backtest_comparison.ipynb       # Strategy comparison
 │   └── optimization.ipynb              # Parameter optimization
+│
+├── runs/                               # Per-run output (git-ignored)
+│   └── <TICKER>_<YYYYMMDD>_<HHMMSS>/  # Timestamped run folder
+│       ├── report.md                   # Markdown performance report
+│       ├── chart_indicators.png        # Price + indicators chart
+│       ├── chart_signals.png           # Buy/sell signal chart
+│       ├── chart_performance.png       # Equity curve chart
+│       └── chart_risk.png              # Drawdown / risk chart
 │
 └── logs/                               # Log files
     └── trading_system.log
@@ -96,7 +104,7 @@ automated-trading-system/
 ## 📦 Core Components
 
 ### 1. **AutomatedTradingSystem** (Main Orchestrator)
-**File:** `src/automated_trading_system.py` (553 lines)
+**File:** `src/automated_trading_system.py` (585 lines)
 
 **Responsibilities:**
 - Coordinate all system components
@@ -109,7 +117,6 @@ automated-trading-system/
 
 **Key Classes:**
 - `AutomatedTradingSystem` - Main class
-- `IndicatorCalculator` - Calculates 12+ indicators
 
 **Key Methods:**
 - `fetch_data()` - Get historical data
@@ -117,12 +124,12 @@ automated-trading-system/
 - `generate_signals()` - Create trading signals
 - `execute_signal()` - Execute trades
 - `backtest()` - Run backtesting
-- `print_detailed_results()` - Generate reports
+- `print_detailed_results()` - Print results summary
 
 ---
 
 ### 2. **TradingSystem** (Portfolio & Position Management)
-**File:** `src/trading_system.py` (571 lines)
+**File:** `src/trading_system.py` (588 lines)
 
 **Responsibilities:**
 - Manage portfolio positions
@@ -150,7 +157,7 @@ automated-trading-system/
 ---
 
 ### 3. **SignalGenerator** (Technical Analysis)
-**File:** `src/signal_generator.py` (486 lines)
+**File:** `src/signal_generator.py` (493 lines)
 
 **Responsibilities:**
 - Analyze technical indicators
@@ -174,6 +181,58 @@ automated-trading-system/
 
 ---
 
+### 4. **IndicatorCalculator** (Technical Indicators)
+**File:** `src/indicator_calculator.py` (119 lines)
+
+**Responsibilities:**
+- Compute all technical indicators from OHLCV data
+- Return a single enriched DataFrame consumed by the rest of the system
+
+**Key Functions:**
+- `calculate_indicators(df)` - Adds 12+ indicator columns to the price DataFrame
+
+---
+
+### 5. **Visualization** (Chart Dashboards)
+**File:** `src/visualization.py` (648 lines)
+
+**Responsibilities:**
+- Render multi-panel chart dashboards
+- Save charts to per-run output folders
+
+**Key Functions:**
+- `plot_technical_indicators(system)` - Price + indicators panel
+- `plot_signals(system)` - Buy/sell signal overlay
+- `plot_performance(system)` - Equity curve
+- `plot_risk(system)` - Drawdown and risk metrics
+
+---
+
+### 6. **Report** (Per-Run Output)
+**File:** `src/report.py` (368 lines)
+
+**Responsibilities:**
+- Create a timestamped `runs/<TICKER>_<timestamp>/` folder
+- Write a Markdown performance report
+- Save all four chart PNGs into that folder
+
+**Key Functions:**
+- `generate_report(system)` - Orchestrates report + chart generation
+
+---
+
+### 7. **Logger** (Centralised Logging)
+**File:** `src/logger.py` (65 lines)
+
+**Responsibilities:**
+- Provide a single `get_logger(name)` factory used by every module
+- Route output to both console and `logs/trading_system.log`
+
+**Key Functions:**
+- `get_logger(name)` - Returns a configured `logging.Logger`
+
+---
+
 ## 📊 Technical Architecture
 
 ### Data Flow
@@ -183,21 +242,21 @@ Yahoo Finance API
        ↓
    Data Layer
        ↓
-Indicator Calculator (12+ indicators)
+IndicatorCalculator (12+ indicators)
        ↓
-Signal Generator (AI-based scoring)
+SignalGenerator (AI-based scoring)
        ↓
-Multi-Timeframe Analyzer (Confluence)
+MultiTimeframeAnalyzer (Confluence)
        ↓
-Risk Manager (Validation)
+RiskManager (Validation)
        ↓
-Order Manager (Execution)
+OrderManager (Execution)
        ↓
-Portfolio Manager (Tracking)
+PortfolioManager (Tracking)
        ↓
-Trade Logger (Analysis)
+TradeLogger (Analysis)
        ↓
-Reporting & Metrics
+Report + Visualization (runs/<ticker>_<ts>/)
 ```
 
 ### Component Interaction
@@ -214,7 +273,8 @@ AutomatedTradingSystem
    │   ├─→ P&L Calculation
    │   └─→ TradeLogger
    ├─→ OrderManager
-   └─→ Reporting
+   ├─→ Visualization
+   └─→ Report
 ```
 
 ---
@@ -352,6 +412,12 @@ backtesting:
 - ✅ Trade-by-trade analysis
 - ✅ Performance reporting
 
+### Output & Visualization
+- ✅ Per-run timestamped output folders (`runs/`)
+- ✅ Four chart dashboards (PNG)
+- ✅ Markdown performance reports
+- ✅ Structured log file
+
 ---
 
 ## 📊 Performance Metrics
@@ -394,50 +460,30 @@ backtesting:
 - Data flow verification
 - Multi-component interactions
 - Backtest consistency
-
-### Backtesting Tests
-- Historical validation
-- Multiple timeframes
-- Different market conditions
-- Parameter sensitivity
+- README and example script validation
 
 ---
 
 ## 📚 Documentation
 
-### Quick Start
-- **START_HERE.txt** - Step-by-step guide
-- **README.md** - Quick overview
-- **SYSTEM_OVERVIEW.txt** - Feature list
-
 ### Comprehensive Guides
-- **TRADING_SYSTEM_GUIDE.md** - Complete guide (20 KB)
+- **TRADING_SYSTEM_GUIDE.md** - Complete guide
 - **QUICK_REFERENCE.md** - Quick lookup
-- **DELIVERY_SUMMARY.md** - Delivery info
 
 ### Technical Docs
 - **API_REFERENCE.md** - Method reference
 - **ARCHITECTURE.md** - System design
 - **EXAMPLES.md** - Code examples
+- **PROJECT_STRUCTURE.md** - This file
 
 ---
 
 ## 🔄 Workflow
 
-### Development Workflow
-```
-1. Feature Planning
-2. Code Implementation
-3. Unit Testing
-4. Integration Testing
-5. Documentation
-6. Release
-```
-
 ### User Workflow
 ```
 1. Install Dependencies
-2. Read Documentation
+2. Read README.md
 3. Run Examples
 4. Backtest Strategy
 5. Optimize Parameters
@@ -466,7 +512,7 @@ backtesting:
 ## 🛠️ Installation & Setup
 
 ### Prerequisites
-- Python 3.8+
+- Python 3.13+
 - pip or conda
 - Internet connection (for Yahoo Finance)
 
@@ -474,10 +520,10 @@ backtesting:
 
 ```bash
 # 1. Clone/download project
-git clone <repo> or download files
+git clone <repo>
 
 # 2. Navigate to project
-cd automated-trading-system
+cd automated-trading-systems
 
 # 3. Create virtual environment (recommended)
 python -m venv venv
@@ -487,7 +533,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # 5. Verify installation
-python -c "import pandas; import yfinance; print('✓ Ready')"
+python -c "import pandas; import yfinance; print('Ready')"
 
 # 6. Run first example
 python examples/01_simple_backtest.py
@@ -541,65 +587,6 @@ results = system.backtest("2023-01-01", "2024-01-31")
 
 ---
 
-## 🎯 Success Criteria
-
-### Code Quality
-- ✅ 2000+ lines of production code
-- ✅ 20+ classes and components
-- ✅ 100+ methods
-- ✅ Well-commented code
-- ✅ Follows best practices
-
-### Documentation
-- ✅ 60+ KB comprehensive docs
-- ✅ Quick start guide
-- ✅ Complete API reference
-- ✅ Code examples
-- ✅ Architecture documentation
-
-### Functionality
-- ✅ Multi-timeframe analysis
-- ✅ 12+ technical indicators
-- ✅ Intelligent signal generation
-- ✅ Risk management
-- ✅ Portfolio tracking
-- ✅ Performance reporting
-
-### Testing
-- ✅ Unit tests
-- ✅ Integration tests
-- ✅ Backtest validation
-- ✅ Error handling
-
----
-
-## 📋 Project Checklist
-
-### Completed ✅
-- [x] Core system implementation
-- [x] Technical indicators
-- [x] Signal generation
-- [x] Portfolio management
-- [x] Risk management
-- [x] Backtesting engine
-- [x] Trade logging
-- [x] Performance metrics
-- [x] Documentation (60+ KB)
-- [x] Code examples
-- [x] Quick start guide
-
-### Future Enhancements (Optional)
-- [ ] Live broker integration
-- [ ] Machine learning models
-- [ ] Advanced optimization
-- [ ] Web dashboard
-- [ ] Email notifications
-- [ ] Database persistence
-- [ ] Real-time alerts
-- [ ] Advanced charting
-
----
-
 ## ⚠️ Important Notes
 
 ### Safety
@@ -624,34 +611,20 @@ results = system.backtest("2023-01-01", "2024-01-31")
 1. `src/automated_trading_system.py` - Main system
 2. `src/trading_system.py` - Portfolio management
 3. `src/signal_generator.py` - Signal generation
+4. `src/indicator_calculator.py` - Technical indicators
+5. `src/visualization.py` - Chart dashboards
+6. `src/report.py` - Per-run report output
+7. `src/logger.py` - Logging setup
 
 ### Documentation
 1. `docs/TRADING_SYSTEM_GUIDE.md` - Complete guide
 2. `docs/QUICK_REFERENCE.md` - Quick reference
-3. `docs/SYSTEM_OVERVIEW.txt` - Features overview
+3. `docs/API_REFERENCE.md` - API reference
 
 ### Examples
 1. `examples/01_simple_backtest.py` - Basic example
 2. `examples/02_multi_stock_comparison.py` - Compare stocks
 3. `examples/03_custom_configuration.py` - Custom setup
-
----
-
-## 🚀 Getting Started
-
-### For Beginners
-1. Read `START_HERE.txt`
-2. Read `README.md`
-3. Install dependencies
-4. Run `examples/01_simple_backtest.py`
-5. Read `TRADING_SYSTEM_GUIDE.md`
-
-### For Experienced Users
-1. Review `TRADING_SYSTEM_GUIDE.md`
-2. Check `QUICK_REFERENCE.md`
-3. Run examples
-4. Customize for your strategy
-5. Deploy
 
 ---
 
@@ -663,22 +636,6 @@ results = system.backtest("2023-01-01", "2024-01-31")
 
 ---
 
-## 🎉 Conclusion
-
-This is a **complete, production-ready automated trading system** with:
-- 2000+ lines of code
-- 60+ KB of documentation
-- 12+ technical indicators
-- Comprehensive risk management
-- Full backtesting capability
-- Professional code quality
-
-Everything is included and ready to use. Start with `START_HERE.txt` or `README.md`.
-
-**Good luck with your trading! 🚀📈**
-
----
-
 **Project Version:** 1.0.0  
 **Last Updated:** April 2026  
-**Status:** Complete ✅
+**Status:** Complete
