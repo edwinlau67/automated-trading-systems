@@ -6,21 +6,21 @@ The Automated Trading System is built as a layered pipeline. Each layer has a si
 
 ```
                    ┌──────────────────────────────────────────────┐
-                   │        User / Examples / Notebooks            │
+                   │        User / Examples / Notebooks           │
                    └──────────────────────┬───────────────────────┘
                                           │
-  ╔═══════════════════════════════════════▼══════════════════════════════╗
-  ║              AutomatedTradingSystem  (Orchestrator)                  ║
-  ║                src/automated_trading_system.py                       ║
-  ╠══════════════════════════════════════════════════════════════════════╣
-  ║                                                                      ║
-  ║  ┌─────────────┐   ┌─────────────────┐   ┌──────────────────────┐  ║
-  ║  │ Data Layer  │──►│   Indicators    │──►│   Signal Generator   │  ║
-  ║  │             │   │   Calculator    │   │                      │  ║
+  ╔═══════════════════════════════════════▼═════════════════════════════╗
+  ║              AutomatedTradingSystem  (Orchestrator)                 ║
+  ║                src/automated_trading_system.py                      ║
+  ╠═════════════════════════════════════════════════════════════════════╣
+  ║                                                                     ║
+  ║  ┌─────────────┐   ┌─────────────────┐   ┌───────────────────────┐  ║
+  ║  │ Data Layer  │──►│   Indicators    │──►│   Signal Generator    │  ║
+  ║  │             │   │   Calculator    │   │                       │  ║
   ║  │ yfinance    │   │                 │   │  SignalGenerator      │  ║
-  ║  │ + disk cache│   │  19 cols / TF   │   │  MTFAnalyzer         │  ║
-  ║  │ daily/wk/4h │   │                 │   │                      │  ║
-  ║  └─────────────┘   └─────────────────┘   └──────────┬───────────┘  ║
+  ║  │ + disk cache│   │  19 cols / TF   │   │  MTFAnalyzer          │  ║
+  ║  │ daily/wk/4h │   │                 │   │                       │  ║
+  ║  └─────────────┘   └─────────────────┘   └───────────┬───────────┘  ║
   ║                                                      │              ║
   ║                                          ┌───────────▼───────────┐  ║
   ║                                          │     RiskManager       │  ║
@@ -33,11 +33,11 @@ The Automated Trading System is built as a layered pipeline. Each layer has a si
   ║                                          │  TradeLogger          │  ║
   ║                                          └───────────┬───────────┘  ║
   ║                                                      │              ║
-  ║  ┌───────────────────────────────────────────────────▼──────────┐  ║
-  ║  │       report.py  ·  visualization.py  ·  logger.py           │  ║
-  ║  └──────────────────────────────────────────────────────────────┘  ║
-  ║                                                                      ║
-  ╚══════════════════════════════════════════════════════════════════════╝
+  ║  ┌───────────────────────────────────────────────────▼───────────┐  ║
+  ║  │       report.py  ·  visualization.py  ·  logger.py            │  ║
+  ║  └───────────────────────────────────────────────────────────────┘  ║
+  ║                                                                     ║
+  ╚═════════════════════════════════════════════════════════════════════╝
 ```
 
 ---
@@ -93,67 +93,67 @@ The Automated Trading System is built as a layered pipeline. Each layer has a si
   ║  yfinance.download(ticker, start, end)                               ║
   ║    ├─ cache hit  ──► read  data/cache/<TICKER>_<dates>.csv           ║
   ║    └─ cache miss ──► fetch ──► write data/cache/                     ║
-  ║  Resample ──► system.data['daily']  ·  ['weekly']  ·  ['4h']        ║
-  ╚══════════════════════════════════╦═════════════════════════════════╝
+  ║  Resample ──► system.data['daily']  ·  ['weekly']  ·  ['4h']         ║
+  ╚══════════════════════════════════╦═══════════════════════════════════╝
                                      ║
                                      ▼
   ╔══════════════════════════════════════════════════════════════════════╗
-  ║  2 · INDICATOR CALCULATION  (IndicatorCalculator.calculate_all)     ║
+  ║  2 · INDICATOR CALCULATION  (IndicatorCalculator.calculate_all)      ║
   ╠══════════════════════════════════════════════════════════════════════╣
-  ║  Trend     │ SMA 20/50/200  ·  EMA 12/26                            ║
-  ║  Momentum  │ MACD  ·  MACD Signal  ·  MACD Histogram  ·  RSI        ║
-  ║  Oscillat. │ Stochastic %K  ·  Stochastic %D                        ║
-  ║  Volatil.  │ ATR  ·  Bollinger Upper / Middle / Lower               ║
-  ║  Strength  │ ADX  ·  +DI  ·  −DI  ·  RSI Divergence    [19 cols]   ║
-  ╚══════════════════════════════════╦═════════════════════════════════╝
+  ║  Trend     │ SMA 20/50/200  ·  EMA 12/26                             ║
+  ║  Momentum  │ MACD  ·  MACD Signal  ·  MACD Histogram  ·  RSI         ║
+  ║  Oscillat. │ Stochastic %K  ·  Stochastic %D                         ║
+  ║  Volatil.  │ ATR  ·  Bollinger Upper / Middle / Lower                ║
+  ║  Strength  │ ADX  ·  +DI  ·  −DI  ·  RSI Divergence    [19 cols]     ║
+  ╚══════════════════════════════════╦═══════════════════════════════════╝
                                      ║
                                      ▼
   ╔══════════════════════════════════════════════════════════════════════╗
-  ║  3 · SIGNAL GENERATION  (per bar, per timeframe)                    ║
+  ║  3 · SIGNAL GENERATION  (per bar, per timeframe)                     ║
   ╠══════════════════════════════════════════════════════════════════════╣
   ║  SignalGenerator.generate_signal()                                   ║
   ║                                                                      ║
   ║    Component          Weight   Inputs                                ║
-  ║    ─────────────────────────────────────────────────────────────    ║
-  ║    Trend Alignment     25%    SMA 20/50  ·  EMA 12/26               ║
-  ║    Momentum            25%    MACD  ·  RSI  ·  Stochastic           ║
-  ║    Reversal            20%    RSI divergence  ·  Bollinger extremes ║
-  ║    Volatility / ADX    15%    ADX  (suppressed if ADX < 15)         ║
-  ║    Price Action        15%    Higher / lower highs and lows         ║
-  ║    ─────────────────────────────────────────────────────────────    ║
-  ║    Combined score ≥ 0.55  ──►  Signal emitted                      ║
+  ║    ─────────────────────────────────────────────────────────────     ║
+  ║    Trend Alignment     25%    SMA 20/50  ·  EMA 12/26                ║
+  ║    Momentum            25%    MACD  ·  RSI  ·  Stochastic            ║
+  ║    Reversal            20%    RSI divergence  ·  Bollinger extremes  ║
+  ║    Volatility / ADX    15%    ADX  (suppressed if ADX < 15)          ║
+  ║    Price Action        15%    Higher / lower highs and lows          ║
+  ║    ─────────────────────────────────────────────────────────────     ║
+  ║    Combined score ≥ 0.55  ──►  Signal emitted                        ║
   ║                                                                      ║
   ║  MultiTimeframeSignalAnalyzer.get_combined_signal()                  ║
   ║    weekly ──┐                                                        ║
-  ║    daily  ──┼──► ≥ 2 timeframes agree ──► combined Signal           ║
+  ║    daily  ──┼──► ≥ 2 timeframes agree ──► combined Signal            ║
   ║    4h     ──┘                                                        ║
-  ╚══════════════════════════════════╦═════════════════════════════════╝
+  ╚══════════════════════════════════╦═══════════════════════════════════╝
                                      ║
                                      ▼
   ╔══════════════════════════════════════════════════════════════════════╗
-  ║  4 · RISK VALIDATION  (RiskManager.validate_trade)                  ║
+  ║  4 · RISK VALIDATION  (RiskManager.validate_trade)                   ║
   ╠══════════════════════════════════════════════════════════════════════╣
   ║  ✓  open positions  < max_positions                                  ║
-  ║  ✓  position value  ≤ max_position_size_pct × portfolio value       ║
+  ║  ✓  position value  ≤ max_position_size_pct × portfolio value        ║
   ║  ✓  available cash  ≥ position value                                 ║
-  ║  ✓  daily loss      < max_daily_loss_pct × initial capital          ║
-  ╚══════════════════════════════════╦═════════════════════════════════╝
+  ║  ✓  daily loss      < max_daily_loss_pct × initial capital           ║
+  ╚══════════════════════════════════╦═══════════════════════════════════╝
                                      ║
                                      ▼
   ╔══════════════════════════════════════════════════════════════════════╗
-  ║  5 · EXECUTION  (PortfolioManager + OrderManager)                   ║
+  ║  5 · EXECUTION  (PortfolioManager + OrderManager)                    ║
   ╠══════════════════════════════════════════════════════════════════════╣
   ║  open_position()   ──► Position added to portfolio.positions         ║
-  ║  check_exit()      ──► stop-loss / take-profit monitoring per bar   ║
+  ║  check_exit()      ──► stop-loss / take-profit monitoring per bar    ║
   ║  close_position()  ──► Trade added to portfolio.closed_positions     ║
-  ╚══════════════════════════════════╦═════════════════════════════════╝
+  ╚══════════════════════════════════╦═══════════════════════════════════╝
                                      ║
                                      ▼
   ╔══════════════════════════════════════════════════════════════════════╗
   ║  6 · REPORTING                                                       ║
   ╠══════════════════════════════════════════════════════════════════════╣
   ║  TradeLogger.get_trade_statistics()                                  ║
-  ║  report.py         ──► runs/<TICKER>_<ts>/report.md + 4 chart PNGs  ║
+  ║  report.py         ──► runs/<TICKER>_<ts>/report.md + 4 chart PNGs   ║
   ║  _save_backtest_results() ──► data/backtest_results/*.json           ║
   ║  export_trades()   ──► data/exports/*.csv                            ║
   ╚══════════════════════════════════════════════════════════════════════╝

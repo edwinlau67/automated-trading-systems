@@ -36,7 +36,7 @@ This is a **production-ready automated trading system** that:
 
 ```
   ┌───────────────────────────────────────────────────────────────────────┐
-  │                       User / Examples / Notebooks                      │
+  │                       User / Examples / Notebooks                     │
   └───────────────────────────────────────────────────────────────────────┘
                                         │
   ╔═══════════════════════════════════════════════════════════════════════╗
@@ -44,30 +44,30 @@ This is a **production-ready automated trading system** that:
   ╠═══════════════════════════════════════════════════════════════════════╣
   ║  yfinance.download()  ──►  CSV cache (data/cache/)                    ║
   ║  Resample  ──►  daily  ·  weekly  ·  4h  DataFrames                   ║
-  ╚═══════════════════════════════╦═════════════════════════════════════╝
+  ╚═══════════════════════════════╦═══════════════════════════════════════╝
                                   ║
                                   ▼
   ╔═══════════════════════════════════════════════════════════════════════╗
   ║  ❷  INDICATOR CALCULATION LAYER                                       ║
   ╠═══════════════════════════════════════════════════════════════════════╣
-  ║  SMA 20/50/200  ·  EMA 12/26  ·  MACD  ·  RSI  ·  RSI Divergence     ║
-  ║  ATR  ·  ADX  ·  Bollinger Bands  ·  Stochastic %K/%D   [19 cols]    ║
-  ╚═══════════════════════════════╦═════════════════════════════════════╝
+  ║  SMA 20/50/200  ·  EMA 12/26  ·  MACD  ·  RSI  ·  RSI Divergence      ║
+  ║  ATR  ·  ADX  ·  Bollinger Bands  ·  Stochastic %K/%D   [19 cols]     ║
+  ╚═══════════════════════════════╦═══════════════════════════════════════╝
                                   ║
                                   ▼
   ╔═══════════════════════════════════════════════════════════════════════╗
   ║  ❸  SIGNAL GENERATION LAYER                                           ║
   ╠═══════════════════════════════════════════════════════════════════════╣
   ║  5-component scoring model  (confidence threshold  0.55)              ║
-  ║  ┌──────────────────┬───────┬─────────────────────────────────────┐  ║
-  ║  │ Trend Alignment  │  25%  │ SMA 20/50  ·  EMA 12/26             │  ║
-  ║  │ Momentum         │  25%  │ MACD  ·  RSI  ·  Stochastic         │  ║
-  ║  │ Reversal         │  20%  │ RSI divergence  ·  Bollinger         │  ║
-  ║  │ Volatility / ADX │  15%  │ ADX  (suppressed if ADX < 15)       │  ║
-  ║  │ Price Action     │  15%  │ Higher / lower highs and lows        │  ║
-  ║  └──────────────────┴───────┴─────────────────────────────────────┘  ║
-  ║  Multi-Timeframe: weekly  ·  daily  ·  4h  →  consensus (≥ 2 agree)  ║
-  ╚═══════════════════════════════╦═════════════════════════════════════╝
+  ║  ┌──────────────────┬───────┬─────────────────────────────────────┐   ║
+  ║  │ Trend Alignment  │  25%  │ SMA 20/50  ·  EMA 12/26             │   ║
+  ║  │ Momentum         │  25%  │ MACD  ·  RSI  ·  Stochastic         │   ║
+  ║  │ Reversal         │  20%  │ RSI divergence  ·  Bollinger        │   ║
+  ║  │ Volatility / ADX │  15%  │ ADX  (suppressed if ADX < 15)       │   ║
+  ║  │ Price Action     │  15%  │ Higher / lower highs and lows       │   ║
+  ║  └──────────────────┴───────┴─────────────────────────────────────┘   ║
+  ║  Multi-Timeframe: weekly  ·  daily  ·  4h  →  consensus (≥ 2 agree)   ║
+  ╚═══════════════════════════════╦═══════════════════════════════════════╝
                                   ║
                                   ▼
   ╔═══════════════════════════════════════════════════════════════════════╗
@@ -75,7 +75,7 @@ This is a **production-ready automated trading system** that:
   ╠═══════════════════════════════════════════════════════════════════════╣
   ║  ✓ Position count limit   ✓ Position size limit                       ║
   ║  ✓ Daily loss limit       ✓ Capital availability                      ║
-  ╚═══════════════════════════════╦═════════════════════════════════════╝
+  ╚═══════════════════════════════╦═══════════════════════════════════════╝
                                   ║
                                   ▼
   ╔═══════════════════════════════════════════════════════════════════════╗
@@ -84,7 +84,7 @@ This is a **production-ready automated trading system** that:
   ║  OrderManager.place_order / execute_order                             ║
   ║  PortfolioManager.open_position / close_position                      ║
   ║  Stop-loss  ·  Take-profit monitoring per bar                         ║
-  ╚═══════════════════════════════╦═════════════════════════════════════╝
+  ╚═══════════════════════════════╦═══════════════════════════════════════╝
                                   ║
                                   ▼
   ╔═══════════════════════════════════════════════════════════════════════╗
