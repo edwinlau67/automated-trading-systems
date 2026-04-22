@@ -28,8 +28,8 @@ A Python-based automated trading system using multi-timeframe technical analysis
 | `test_examples.py` | 12 tests for QUICK_REFERENCE examples | 231 |
 | `test_readme_examples.py` | 4 tests for README examples | 98 |
 | `requirements.txt` | Python dependencies | — |
-| `TRADING_SYSTEM_GUIDE.md` | Full documentation | — |
-| `QUICK_REFERENCE.md` | Quick lookup guide | — |
+| `docs/TRADING_SYSTEM_GUIDE.md` | Full documentation | — |
+| `docs/QUICK_REFERENCE.md` | Quick lookup guide | — |
 
 ---
 
