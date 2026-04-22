@@ -1,35 +1,31 @@
 # Automated Trading System
 
-A Python-based automated trading system using multi-timeframe technical analysis, signal generation, and risk management. Supports backtesting on historical data and live signal generation with real-time prices.
+A Python-based automated trading system with multi-timeframe technical analysis, confidence-scored signal generation, and rule-based risk management. Supports historical backtesting and live signal generation.
 
 ---
 
-## Features
+## Project Structure
 
-- **Multi-timeframe analysis** — weekly, daily, 4-hour
-- **12+ technical indicators** — MACD, RSI, ADX, ATR, Bollinger Bands, Stochastic, SMA, EMA
-- **Signal generation** — buy/sell signals with 0–100% confidence scoring
-- **Risk management** — automatic position sizing, daily loss limits, position limits
-- **Portfolio tracking** — full P&L, open/closed positions, trade history
-- **Backtesting** — trade-by-trade simulation with performance metrics
-- **Real-time data** — live price patching via `fetch_realtime_data()`
-- **Test suite** — 16 tests covering all documented examples
-
----
-
-## Files
-
-| File | Purpose | Lines |
-|------|---------|-------|
-| `automated_trading_system.py` | Main orchestrator, data, backtesting | 585 |
-| `trading_system.py` | Portfolio, positions, risk, order management | 571 |
-| `signal_generator.py` | Technical analysis and signal generation | 486 |
-| `backtest_framework.py` | Additional backtesting utilities | 437 |
-| `test_examples.py` | 12 tests for QUICK_REFERENCE examples | 231 |
-| `test_readme_examples.py` | 4 tests for README examples | 98 |
-| `requirements.txt` | Python dependencies | — |
-| `docs/TRADING_SYSTEM_GUIDE.md` | Full documentation | — |
-| `docs/QUICK_REFERENCE.md` | Quick lookup guide | — |
+```
+automated-trading-systems/
+├── src/                        # Core library
+│   ├── automated_trading_system.py  # Main orchestrator
+│   ├── trading_system.py            # Portfolio, risk, orders
+│   ├── signal_generator.py          # Signal scoring engine
+│   └── indicator_calculator.py      # 12+ technical indicators
+├── examples/                   # Runnable example scripts
+│   ├── 01_simple_backtest.py
+│   ├── 02_multi_stock_comparison.py
+│   ├── 03_custom_configuration.py
+│   ├── 04_signal_generation.py
+│   └── 05_advanced_analysis.py
+├── tests/                      # 65 unit + integration tests
+├── config/                     # YAML configuration files
+├── docs/                       # Full documentation
+├── report.py                   # Per-run Markdown report generator
+├── visualization.py            # Chart dashboard (4 panels)
+└── requirements.txt
+```
 
 ---
 
@@ -40,81 +36,63 @@ git clone https://github.com/edwinlau67/automated-trading-systems.git
 cd automated-trading-systems
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
+python examples/01_simple_backtest.py
 ```
 
 ---
 
-## Code Examples
+## Usage
 
-### Example 1: Simple Backtest
+### Backtest
 
 ```python
-from automated_trading_system import AutomatedTradingSystem
+from src.automated_trading_system import AutomatedTradingSystem
 
-system = AutomatedTradingSystem(initial_capital=10000, ticker="MSFT")
-results = system.backtest("2023-01-01", "2024-01-31")
-
-print(f"Return: {results['portfolio']['return_pct']:.2f}%")
-print(f"Win Rate: {results['trades']['win_rate']:.2f}%")
-print(f"Profit Factor: {results['trades']['profit_factor']:.2f}")
+system = AutomatedTradingSystem(initial_capital=10000, ticker="AAPL")
+results = system.backtest("2023-01-01", "2024-01-01")
+system.print_detailed_results()
 ```
 
-### Example 2: Real-Time Signal
+### Real-Time Signal
 
 ```python
-from automated_trading_system import AutomatedTradingSystem
+from src.automated_trading_system import AutomatedTradingSystem
 
 system = AutomatedTradingSystem(ticker="AAPL")
 system.fetch_realtime_data(lookback_days=365)
 system.calculate_indicators()
-
-signal = system.generate_signals()
-if signal:
-    print(f"Signal: {signal}")
-    print(f"Confidence: {signal.confidence:.1%}")
-    print(f"Entry: ${signal.entry_price:.2f}")
-    print(f"Stop:  ${signal.stop_loss:.2f}")
-    print(f"Target:${signal.take_profit:.2f}")
-else:
-    print("No signal (neutral conditions)")
+signals = system.generate_signals()
+if signals:
+    s = signals[-1]
+    print(f"{s.signal_type}  confidence={s.confidence:.1%}  entry=${s.entry_price:.2f}  stop=${s.stop_loss:.2f}  target=${s.take_profit:.2f}")
 ```
 
-### Example 3: Multi-Stock Comparison
+### Multi-Stock Comparison
 
 ```python
 import pandas as pd
-from automated_trading_system import AutomatedTradingSystem
+from src.automated_trading_system import AutomatedTradingSystem
 
-results = {}
+rows = {}
 for ticker in ["AAPL", "MSFT", "GOOGL", "TSLA"]:
     system = AutomatedTradingSystem(10000, ticker)
-    results[ticker] = system.backtest("2023-06-01", "2024-01-31")
+    r = system.backtest("2023-01-01", "2024-01-01")
+    rows[ticker] = {"Return %": r["portfolio"]["return_pct"], "Win Rate %": r["trades"]["win_rate"]}
 
-df = pd.DataFrame({
-    ticker: {
-        'Return': r['portfolio']['return_pct'],
-        'Win_Rate': r['trades']['win_rate'],
-        'Profit_Factor': r['trades']['profit_factor']
-    }
-    for ticker, r in results.items()
-}).T
-
-print(df)
+print(pd.DataFrame(rows).T)
 ```
 
-### Example 4: Custom Configuration
+### Custom Risk Config
 
 ```python
-from automated_trading_system import AutomatedTradingSystem
+from src.automated_trading_system import AutomatedTradingSystem
 
 system = AutomatedTradingSystem(
-    initial_capital=50000,
-    ticker="TSLA",
-    max_positions=5,
-    max_position_size_pct=0.10
+    initial_capital=50000, ticker="TSLA",
+    max_positions=3, max_position_size_pct=0.10
 )
-system.risk_manager.max_daily_loss_pct = 0.03
-results = system.backtest("2022-01-01", "2024-01-31")
+system.risk_manager.max_daily_loss_pct = 0.01
+system.backtest("2023-01-01", "2024-01-01")
 system.print_detailed_results()
 ```
 
@@ -125,74 +103,59 @@ system.print_detailed_results()
 | Category | Indicators |
 |----------|-----------|
 | Trend | SMA (20, 50, 200), EMA (12, 26) |
-| Momentum | MACD, RSI, Stochastic Oscillator |
-| Volatility | ATR, Bollinger Bands |
-| Trend Strength | ADX, +DI, -DI |
+| Momentum | MACD (12/26/9), RSI (14), Stochastic (14) |
+| Volatility | ATR (14), Bollinger Bands (20/2σ) |
+| Trend Strength | ADX (14), +DI, -DI |
+| Pattern | RSI Divergence, Support/Resistance |
 
 ---
 
-## Signal Generation
+## Signal Scoring
 
-Each signal is scored across five dimensions:
+Signals require ≥ 55% confidence across five weighted components:
 
-1. **Trend Alignment (25%)** — price vs. moving averages
-2. **Momentum (25%)** — MACD, RSI, Stochastic
-3. **Reversal (20%)** — divergences, support/resistance
-4. **Volatility (15%)** — ADX trend strength
-5. **Price Action (15%)** — higher highs/lows
+| Component | Weight |
+|-----------|--------|
+| Trend alignment (price vs. MAs) | 25% |
+| Momentum (MACD, RSI, Stochastic) | 25% |
+| Reversal (divergences, S/R bounces) | 20% |
+| Volatility (ADX, ATR, Bollinger) | 15% |
+| Price action (HH/HL, breakouts) | 15% |
 
-Minimum confidence threshold: **55%**
-
----
-
-## Performance Metrics
-
-| Metric | Target |
-|--------|--------|
-| Return | > 0% |
-| Win Rate | > 50% |
-| Profit Factor | > 1.5 |
-| Max Drawdown | < 20% |
-| Sharpe Ratio | > 1.0 |
+Multi-timeframe confluence (weekly + daily agreement) adds up to +15%.
 
 ---
 
 ## Risk Management
 
-- Automatic position sizing based on risk/reward
-- Maximum concurrent positions
-- Max % of portfolio per trade
-- Daily loss limit — stops trading if threshold exceeded
-- Stop loss and take profit enforcement
+- Position size capped at `max_position_size_pct` of portfolio (default 5%)
+- Maximum concurrent open positions (default 5)
+- Daily loss limit halts trading (default 2% of capital)
+- Minimum risk/reward ratio of 1.5 enforced on every trade
 
 ---
 
 ## Running Tests
 
 ```bash
-python test_examples.py       # 12 tests
-python test_readme_examples.py  # 4 tests
+pytest tests/ -v
+# 65 passed
 ```
 
 ---
 
-## Configuration
+## Documentation
 
-```python
-system = AutomatedTradingSystem(
-    initial_capital=10000,
-    ticker="AAPL",
-    max_positions=5,
-    max_position_size_pct=0.05
-)
-
-system.risk_manager.max_daily_loss_pct = 0.02
-system.risk_manager.max_positions = 10
-system.portfolio.use_margin = False
-```
+| File | Contents |
+|------|---------|
+| `docs/TRADING_SYSTEM_GUIDE.md` | Complete user guide |
+| `docs/QUICK_REFERENCE.md` | Quick lookup for common tasks |
+| `docs/API_REFERENCE.md` | Full API reference |
+| `docs/ARCHITECTURE.md` | System design and data flow |
+| `docs/EXAMPLES.md` | Annotated code examples |
 
 ---
 
 ## Disclaimer
 
-This system is for educational and backtesting purposes only. Past performance does not guarantee future results. All trading involves risk of loss.
+For educational and research purposes only. Past performance does not guarantee future results. All trading involves risk of loss.
