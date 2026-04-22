@@ -1,6 +1,6 @@
 # Automated Trading System - Complete Guide
 
-## 📋 Table of Contents
+## Table of Contents
 1. [Overview](#overview)
 2. [Architecture](#architecture)
 3. [Installation](#installation)
@@ -16,18 +16,18 @@
 ## Overview
 
 This is a **production-ready automated trading system** that:
-- ✅ Analyzes multiple timeframes (weekly, daily, 4-hour)
-- ✅ Generates algorithmic trading signals
-- ✅ Manages positions and risk automatically
-- ✅ Executes trades based on technical analysis
-- ✅ Tracks performance and generates reports
-- ✅ Backtests strategies on historical data
+- Analyzes multiple timeframes (weekly, daily, 4-hour)
+- Generates algorithmic trading signals with confidence scoring
+- Manages positions and risk automatically
+- Tracks performance and generates charts and Markdown reports
+- Backtests strategies on historical data with results cached to disk
 
 **Key Features:**
-- Multi-indicator technical analysis (12+ indicators)
-- Intelligent signal generation with confidence scoring
+- Multi-indicator technical analysis (19 indicator columns)
+- Multi-timeframe signal consensus (requires ≥2 timeframes to agree)
 - Automatic position sizing based on risk management
 - Complete portfolio tracking and P&L analysis
+- Structured logging to file and console
 - Easy configuration for different trading styles
 
 ---
@@ -35,88 +35,94 @@ This is a **production-ready automated trading system** that:
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│         AUTOMATED TRADING SYSTEM ARCHITECTURE            │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │         DATA LAYER (Yahoo Finance API)           │  │
-│  │  • Fetch historical OHLCV data                  │  │
-│  │  • Support multiple timeframes                   │  │
-│  │  • Clean and normalize data                      │  │
-│  └──────────────────────────────────────────────────┘  │
-│                         ↓                               │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │      INDICATOR CALCULATION LAYER                 │  │
-│  │  • Moving Averages (SMA, EMA)                    │  │
-│  │  • Momentum (MACD, RSI, Stochastic)              │  │
-│  │  • Volatility (ATR, ADX, Bollinger Bands)        │  │
-│  │  • Divergence Detection                          │  │
-│  └──────────────────────────────────────────────────┘  │
-│                         ↓                               │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │      SIGNAL GENERATION LAYER                     │  │
-│  │  • Single Timeframe Analysis                     │  │
-│  │  • Multi-Timeframe Confluence                    │  │
-│  │  • Confidence Scoring                            │  │
-│  │  • Entry/Stop/Target Calculation                 │  │
-│  └──────────────────────────────────────────────────┘  │
-│                         ↓                               │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │      RISK MANAGEMENT LAYER                       │  │
-│  │  • Position Sizing                               │  │
-│  │  • Risk/Reward Validation                        │  │
-│  │  • Capital Limits                                │  │
-│  │  • Margin Management                             │  │
-│  └──────────────────────────────────────────────────┘  │
-│                         ↓                               │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │      EXECUTION LAYER                             │  │
-│  │  • Order Management                              │  │
-│  │  • Position Tracking                             │  │
-│  │  • Entry/Exit Logic                              │  │
-│  │  • Trade Recording                               │  │
-│  └──────────────────────────────────────────────────┘  │
-│                         ↓                               │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │      PORTFOLIO LAYER                             │  │
-│  │  • Cash Management                               │  │
-│  │  • P&L Calculation                               │  │
-│  │  • Performance Metrics                           │  │
-│  │  • Trade Statistics                              │  │
-│  └──────────────────────────────────────────────────┘  │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
+  ┌───────────────────────────────────────────────────────────────────────┐
+  │                       User / Examples / Notebooks                      │
+  └───────────────────────────────────────────────────────────────────────┘
+                                        │
+  ╔═══════════════════════════════════════════════════════════════════════╗
+  ║  ❶  DATA LAYER                                                        ║
+  ╠═══════════════════════════════════════════════════════════════════════╣
+  ║  yfinance.download()  ──►  CSV cache (data/cache/)                    ║
+  ║  Resample  ──►  daily  ·  weekly  ·  4h  DataFrames                   ║
+  ╚═══════════════════════════════╦═════════════════════════════════════╝
+                                  ║
+                                  ▼
+  ╔═══════════════════════════════════════════════════════════════════════╗
+  ║  ❷  INDICATOR CALCULATION LAYER                                       ║
+  ╠═══════════════════════════════════════════════════════════════════════╣
+  ║  SMA 20/50/200  ·  EMA 12/26  ·  MACD  ·  RSI  ·  RSI Divergence     ║
+  ║  ATR  ·  ADX  ·  Bollinger Bands  ·  Stochastic %K/%D   [19 cols]    ║
+  ╚═══════════════════════════════╦═════════════════════════════════════╝
+                                  ║
+                                  ▼
+  ╔═══════════════════════════════════════════════════════════════════════╗
+  ║  ❸  SIGNAL GENERATION LAYER                                           ║
+  ╠═══════════════════════════════════════════════════════════════════════╣
+  ║  5-component scoring model  (confidence threshold  0.55)              ║
+  ║  ┌──────────────────┬───────┬─────────────────────────────────────┐  ║
+  ║  │ Trend Alignment  │  25%  │ SMA 20/50  ·  EMA 12/26             │  ║
+  ║  │ Momentum         │  25%  │ MACD  ·  RSI  ·  Stochastic         │  ║
+  ║  │ Reversal         │  20%  │ RSI divergence  ·  Bollinger         │  ║
+  ║  │ Volatility / ADX │  15%  │ ADX  (suppressed if ADX < 15)       │  ║
+  ║  │ Price Action     │  15%  │ Higher / lower highs and lows        │  ║
+  ║  └──────────────────┴───────┴─────────────────────────────────────┘  ║
+  ║  Multi-Timeframe: weekly  ·  daily  ·  4h  →  consensus (≥ 2 agree)  ║
+  ╚═══════════════════════════════╦═════════════════════════════════════╝
+                                  ║
+                                  ▼
+  ╔═══════════════════════════════════════════════════════════════════════╗
+  ║  ❹  RISK MANAGEMENT LAYER                                             ║
+  ╠═══════════════════════════════════════════════════════════════════════╣
+  ║  ✓ Position count limit   ✓ Position size limit                       ║
+  ║  ✓ Daily loss limit       ✓ Capital availability                      ║
+  ╚═══════════════════════════════╦═════════════════════════════════════╝
+                                  ║
+                                  ▼
+  ╔═══════════════════════════════════════════════════════════════════════╗
+  ║  ❺  EXECUTION LAYER                                                   ║
+  ╠═══════════════════════════════════════════════════════════════════════╣
+  ║  OrderManager.place_order / execute_order                             ║
+  ║  PortfolioManager.open_position / close_position                      ║
+  ║  Stop-loss  ·  Take-profit monitoring per bar                         ║
+  ╚═══════════════════════════════╦═════════════════════════════════════╝
+                                  ║
+                                  ▼
+  ╔═══════════════════════════════════════════════════════════════════════╗
+  ║  ❻  REPORTING LAYER                                                   ║
+  ╠═══════════════════════════════════════════════════════════════════════╣
+  ║  visualization.py  ──►  4 chart dashboards (PNG)                      ║
+  ║  report.py         ──►  runs/<TICKER>_<ts>/report.md                  ║
+  ║  data/backtest_results/*.json  ·  data/exports/*.csv                  ║
+  ╚═══════════════════════════════════════════════════════════════════════╝
 ```
 
 ---
 
 ## Installation
 
-### 1. Install Python (if not already installed)
+### 1. Install Python 3.8+
 ```bash
-# Recommended: Python 3.8+
 python --version
 ```
 
-### 2. Clone/Download the System Files
+### 2. Clone or Download the Repository
 ```bash
-# Files needed:
-# - automated_trading_system.py (main orchestrator)
-# - trading_system.py (portfolio & position management)
-# - signal_generator.py (technical analysis & signals)
-# - backtest_framework.py (backtesting engine)
-# - requirements.txt (dependencies)
+git clone <repo-url>
+cd automated-trading-systems
 ```
 
-### 3. Install Dependencies
+### 3. Create Virtual Environment and Install Dependencies
 ```bash
+python -m venv venv
+source venv/bin/activate       # macOS/Linux
+# venv\Scripts\activate        # Windows
 pip install -r requirements.txt
 ```
 
 ### 4. Verify Installation
 ```bash
-python -c "import pandas; import numpy; import yfinance; print('✓ All dependencies installed')"
+python -c "import pandas; import numpy; import yfinance; print('All dependencies installed')"
+python -c "from src.automated_trading_system import AutomatedTradingSystem; print('System ready')"
 ```
 
 ---
@@ -125,7 +131,7 @@ python -c "import pandas; import numpy; import yfinance; print('✓ All dependen
 
 ### Run a Complete Backtest in 3 Lines
 ```python
-from automated_trading_system import AutomatedTradingSystem
+from src.automated_trading_system import AutomatedTradingSystem
 
 system = AutomatedTradingSystem(initial_capital=10000, ticker="AAPL")
 system.backtest(start_date="2023-06-01", end_date="2024-01-31")
@@ -134,129 +140,138 @@ system.print_detailed_results()
 
 ### Example Output:
 ```
-✓ Trading System Initialized
-  Capital: $10,000.00
-  Ticker: AAPL
-  Max Positions: 3
+======================================================================
+BACKTESTING
+======================================================================
+INFO      Fetching data  ticker=AAPL  2023-06-01 -> 2024-01-31
+INFO      Data fetched  bars=160  range=2023-06-01 -> 2024-01-31
+INFO      Indicators ready  timeframes=['daily', 'weekly', '4h']
 
-📊 Fetching data for AAPL...
-✓ Data fetched successfully
-  Daily bars: 160
-  Date range: 2023-06-01 to 2024-01-31
+INFO      Trade opened  AAPL  LONG  shares=8.42  entry=$72.50 ...
+INFO      Position closed  AAPL  LONG  LOSS  exit=$69.37  pnl=$-26.30
 
-📈 Calculating indicators...
-✓ Indicators calculated for 3 timeframes
-
-[Backtesting...]
-
-✓ Opened LONG position in AAPL: 8.42 @ $72.50
-✗ LOSS: Closed LONG position in AAPL: -$128.88 (-2.10%)
-
-========================================================================
+======================================================================
 TRADING SYSTEM SUMMARY
-========================================================================
+======================================================================
 
 PORTFOLIO:
   Initial Capital:    $10,000.00
-  Total Value:        $9,871.12
-  Cash:               $9,871.12
-  Return:             -1.29%
-  Unrealized P&L:     $0.00
-  Realized P&L:       -$128.88
+  Total Value:         $9,973.70
+  Cash:                $9,973.70
+  Return:                 -0.26%
+  Unrealized P&L:          $0.00
+  Realized P&L:           -$26.30
 
 TRADES:
-  Total Trades:       1
-  Winning Trades:     0
-  Losing Trades:      1
-  Win Rate:           0.00%
-  Profit Factor:      0.00
-
-[...]
+  Total Trades:               1
+  Winning Trades:             0
+  Losing Trades:              1
+  Win Rate:               0.00%
+  Profit Factor:           0.00
 ```
 
 ---
 
 ## System Components
 
-### 1. **AutomatedTradingSystem** (Main Orchestrator)
+### 1. **AutomatedTradingSystem** — Orchestrator (`src/automated_trading_system.py`)
+
 Coordinates all components and manages the trading workflow.
 
 **Key Methods:**
 ```python
-# Data Management
+# Data
 system.fetch_data(start_date, end_date)
+system.fetch_realtime_data(lookback_days=365)
+
+# Indicators
 system.calculate_indicators()
 
-# Signal Generation
-signal = system.generate_signals()
+# Signals
+signal = system.generate_signals()          # returns Signal | None
 system.display_latest_signal(signal)
 
-# Trade Execution
+# Execution
 system.execute_signal(signal)
 system.check_exit_conditions(current_price)
 system.close_position(reason, exit_price)
 
 # Backtesting
-results = system.backtest(start_date, end_date)
+results = system.backtest(start_date, end_date, signal_timeframe='daily')
 system.print_detailed_results()
+
+# Reporting & Export
+run_folder = system.save_report(start_date, end_date)
+paths = system.save_charts()
+csv_path = system.export_trades()
+removed = system.clear_cache(ticker=None)
 ```
 
-### 2. **PortfolioManager** (Position & Capital Management)
+### 2. **PortfolioManager** — Position & Capital Management (`src/trading_system.py`)
+
 Manages open positions, cash, and portfolio equity.
 
-**Key Features:**
-- Position tracking with entry/exit prices
-- Margin management (optional)
-- Automatic P&L calculation
-- Portfolio value updates
-
 **Key Methods:**
 ```python
-portfolio.open_position(ticker, entry_price, quantity, side, stop_loss, take_profit)
-portfolio.close_position(position_id, exit_price, exit_signal)
+position = portfolio.open_position(ticker, entry_price, quantity, side,
+                                   signal, stop_loss, take_profit)
+trade = portfolio.close_position(position_id, exit_price, exit_signal)
 portfolio.update_position(position_id, current_price)
-portfolio.get_portfolio_summary()
+summary = portfolio.get_portfolio_summary()
+snapshot = portfolio.create_snapshot()
 ```
 
-### 3. **SignalGenerator** (Technical Analysis)
-Analyzes technical indicators and generates trading signals.
+**Key Attributes:**
+- `portfolio.closed_positions` — list of completed `Trade` objects
+- `portfolio.positions` — dict of open `Position` objects keyed by position_id
+- `portfolio.total_value` — current portfolio value
+- `portfolio.cash` — available cash
 
-**Signal Scoring Model:**
-- **Trend Alignment (25%)**: Price vs moving averages
-- **Momentum (25%)**: MACD, RSI, Stochastic
-- **Reversal (20%)**: Divergences, support/resistance
-- **Volatility (15%)**: ADX trend strength
-- **Price Action (15%)**: Higher highs/lows patterns
+### 3. **SignalGenerator** — Technical Analysis (`src/signal_generator.py`)
 
-**Confidence Threshold:** ≥0.55 for signal generation
+Analyzes technical indicators and generates trading signals per bar.
 
-**Key Methods:**
+**Signal Scoring Model (5 components):**
+- **Trend Alignment (25%):** Price vs SMA20/50, EMA12 vs EMA26
+- **Momentum (25%):** MACD, RSI, Stochastic
+- **Reversal (20%):** RSI divergence, Bollinger Band extremes
+- **Volatility/ADX (15%):** ADX strength; signal suppressed if ADX < 15
+- **Price Action (15%):** Higher highs/lows (BUY) or lower highs/lows (SELL)
+
+**Confidence Threshold:** ≥0.55 to emit a signal
+
 ```python
-signal = generator.generate_signal(df, row_index)
-stats = generator.get_signal_summary()
+signal = system.signal_generator.generate_signal(df, row_idx, timeframe)
+stats = system.signal_generator.get_signal_summary()
 ```
 
-### 4. **RiskManager** (Risk Control)
+### 4. **MultiTimeframeSignalAnalyzer** — Confluence (`src/signal_generator.py`)
+
+Combines per-timeframe signals into a single consensus signal.
+
+- Requires at least 2 timeframes to emit the same direction
+- Returns `None` if no consensus reached
+
+### 5. **RiskManager** — Risk Control (`src/trading_system.py`)
+
 Validates trades and controls risk exposure.
 
 **Validations:**
-- Position size checks
-- Available capital verification
-- Daily loss limits
-- Max concurrent positions
-- Risk/reward ratios
+- Position count < `max_positions`
+- Position value ≤ `max_position_size_pct` × portfolio value
+- Sufficient available capital
+- Daily loss < `max_daily_loss_pct` × initial capital
 
-**Key Methods:**
 ```python
-position_size = risk_mgr.calculate_position_size(portfolio_value, risk_amount, stop_distance)
-can_trade, reason = risk_mgr.can_open_position(portfolio, position_value)
-is_valid, reason = risk_mgr.validate_trade(portfolio, ticker, qty, price, stop_loss)
+size = risk_mgr.calculate_position_size(portfolio_value, risk_amount, stop_loss_distance)
+valid, reason = risk_mgr.validate_trade(portfolio, ticker, quantity, price, stop_loss)
+can_open, reason = risk_mgr.can_open_position(portfolio, position_value)
 ```
 
-### 5. **OrderManager** (Order Execution)
-Manages order placement and execution.
+### 6. **OrderManager** — Order Execution (`src/trading_system.py`)
 
-**Key Methods:**
+Manages the order queue.
+
 ```python
 order = order_mgr.place_order(ticker, order_type, side, quantity, price)
 order_mgr.execute_order(order, execution_price)
@@ -264,21 +279,30 @@ order_mgr.cancel_order(order_id)
 pending = order_mgr.get_pending_orders(ticker)
 ```
 
-### 6. **TradeLogger** (Performance Analysis)
-Logs trades and calculates performance metrics.
+### 7. **TradeLogger** — Performance Analysis (`src/trading_system.py`)
 
-**Metrics Calculated:**
-- Win rate, profit factor
-- Average trade size
-- Largest wins/losses
-- Average holding period
-- P&L statistics
+Reads from `portfolio.closed_positions` and computes statistics.
 
-**Key Methods:**
 ```python
-stats = logger.get_trade_statistics()
-logger.print_trade_summary()
+stats = trade_logger.get_trade_statistics()
+trade_logger.print_trade_summary()
 ```
+
+### 8. **IndicatorCalculator** — Technical Indicators (`src/indicator_calculator.py`)
+
+Stateless; all methods are `@staticmethod`. `calculate_all(df)` adds 19 columns to the DataFrame.
+
+### 9. **Visualization** — Charts (`src/visualization.py`)
+
+Four chart dashboards saved as PNG files. Called by `save_report()` and `save_charts()`.
+
+### 10. **Logger** — Structured Logging (`src/logger.py`)
+
+```python
+from src.logger import get_logger
+log = get_logger("my_module")
+```
+Writes to `logs/trading_system.log` (rotating, 5 MB × 5 files) and stdout.
 
 ---
 
@@ -287,9 +311,8 @@ logger.print_trade_summary()
 ### Basic Configuration
 
 ```python
-from automated_trading_system import AutomatedTradingSystem
+from src.automated_trading_system import AutomatedTradingSystem
 
-# Create system with custom parameters
 system = AutomatedTradingSystem(
     initial_capital=50000,           # Starting capital
     ticker="TSLA",                   # Stock to trade
@@ -299,37 +322,47 @@ system = AutomatedTradingSystem(
 
 # Configure risk management
 system.risk_manager.max_daily_loss_pct = 0.03  # Stop if down 3%
-system.risk_manager.max_correlation = 0.6     # Max position correlation
 
 # Run backtest
-system.backtest(
+results = system.backtest(
     start_date="2022-01-01",
     end_date="2024-01-31",
-    signal_timeframe="daily"         # Use daily signals
+    signal_timeframe="daily"
 )
 ```
 
-### Advanced Configuration
+### Using Risk Profile YAMLs
 
 ```python
-# Custom indicator parameters
-from signal_generator import SignalGenerator
+import yaml
+from src.automated_trading_system import AutomatedTradingSystem
 
-gen = SignalGenerator()
-# Modify confidence thresholds
-gen.WEIGHTS = {
-    'trend_alignment': 0.30,   # Increase trend importance
-    'momentum': 0.20,
-    'reversal': 0.25,
-    'volatility': 0.15,
-    'volume': 0.10
-}
+with open("config/risk_profiles.yml") as f:
+    profiles = yaml.safe_load(f)
 
-# Custom position sizing
-system.portfolio.margin_multiplier = 3.0  # 3:1 margin
+profile = profiles["aggressive"]
+system = AutomatedTradingSystem(
+    initial_capital=10000,
+    ticker="AAPL",
+    max_positions=profile["max_positions"],
+    max_position_size_pct=profile["max_position_size_pct"],
+)
+system.risk_manager.max_daily_loss_pct = profile["max_daily_loss_pct"]
+```
 
-# Portfolio snapshots
-snapshot = system.portfolio.create_snapshot()
+### Adjusting Signal Sensitivity
+
+```python
+# More signals (lower bar)
+system.signal_generator.confidence_threshold = 0.50
+
+# Fewer, higher-quality signals
+system.signal_generator.confidence_threshold = 0.65
+
+# Reweight scoring components
+from src.signal_generator import SignalGenerator
+SignalGenerator.WEIGHTS['trend_alignment'] = 0.30
+SignalGenerator.WEIGHTS['momentum'] = 0.20
 ```
 
 ---
@@ -339,27 +372,14 @@ snapshot = system.portfolio.create_snapshot()
 ### Example 1: Backtest a Single Stock
 
 ```python
-from automated_trading_system import AutomatedTradingSystem
+from src.automated_trading_system import AutomatedTradingSystem
 
-# Create trading system
-system = AutomatedTradingSystem(
-    initial_capital=10000,
-    ticker="MSFT"
-)
-
-# Run backtest
-results = system.backtest(
-    start_date="2023-01-01",
-    end_date="2023-12-31"
-)
-
-# Display results
+system = AutomatedTradingSystem(initial_capital=10000, ticker="MSFT")
+results = system.backtest(start_date="2023-01-01", end_date="2023-12-31")
 system.print_detailed_results()
 
-# Access statistics
 portfolio = results['portfolio']
 trades = results['trades']
-
 print(f"Total Return: {portfolio['return_pct']:.2f}%")
 print(f"Win Rate: {trades['win_rate']:.2f}%")
 print(f"Profit Factor: {trades['profit_factor']:.2f}")
@@ -368,34 +388,17 @@ print(f"Profit Factor: {trades['profit_factor']:.2f}")
 ### Example 2: Multi-Stock Backtesting
 
 ```python
-from automated_trading_system import AutomatedTradingSystem
+from src.automated_trading_system import AutomatedTradingSystem
+import pandas as pd
 
 tickers = ["AAPL", "MSFT", "GOOGL", "TSLA", "AMZN"]
 results = {}
 
 for ticker in tickers:
-    print(f"\n{'='*60}")
-    print(f"Backtesting {ticker}")
-    print(f"{'='*60}")
-    
-    system = AutomatedTradingSystem(
-        initial_capital=10000,
-        ticker=ticker
-    )
-    
-    results[ticker] = system.backtest(
-        start_date="2023-06-01",
-        end_date="2024-01-31"
-    )
-    
-    # Quick summary
-    r = results[ticker]
-    print(f"Return: {r['portfolio']['return_pct']:+.2f}%")
-    print(f"Win Rate: {r['trades']['win_rate']:.1f}%")
-    print(f"Trades: {r['trades']['total_trades']}")
+    print(f"Backtesting {ticker}...")
+    system = AutomatedTradingSystem(initial_capital=10000, ticker=ticker)
+    results[ticker] = system.backtest("2023-06-01", "2024-01-31")
 
-# Compare results
-import pandas as pd
 comparison = pd.DataFrame({
     ticker: {
         'Return': results[ticker]['portfolio']['return_pct'],
@@ -412,41 +415,34 @@ print(f"\n{comparison}")
 ### Example 3: Generate Real-Time Signal
 
 ```python
-from automated_trading_system import AutomatedTradingSystem
+from src.automated_trading_system import AutomatedTradingSystem
 
-# Create system
 system = AutomatedTradingSystem(ticker="AAPL")
-
-# Fetch latest data
-system.fetch_data(start_date="2024-01-01", end_date="2024-01-31")
-
-# Calculate indicators
+system.fetch_realtime_data(lookback_days=365)
 system.calculate_indicators()
 
-# Generate latest signal
-signal = system.generate_signals()
+signal = system.generate_signals()   # returns Signal | None
 
 if signal:
-    print(f"Signal: {signal}")
+    print(f"Signal: {signal.signal_type} @ ${signal.entry_price:.2f}")
     print(f"Confidence: {signal.confidence:.1%}")
-    print(f"Entry: ${signal.entry_price:.2f}")
-    print(f"Stop: ${signal.stop_loss:.2f}")
-    print(f"Target: ${signal.take_profit:.2f}")
+    print(f"Stop: ${signal.stop_loss:.2f}  Target: ${signal.take_profit:.2f}")
+    print(f"Timeframe: {signal.timeframe}")
+    for reason in signal.reason:
+        print(f"  {reason}")
 else:
-    print("No signal generated")
+    print("No signal generated — conditions not met.")
 ```
 
 ### Example 4: Manual Trade Execution
 
 ```python
-from automated_trading_system import AutomatedTradingSystem
-from signal_generator import Signal
+from src.automated_trading_system import AutomatedTradingSystem
+from src.signal_generator import Signal
 from datetime import datetime
 
-# Create system
 system = AutomatedTradingSystem(initial_capital=10000, ticker="AAPL")
 
-# Manually create a signal
 signal = Signal(
     ticker="AAPL",
     timestamp=datetime.now(),
@@ -459,14 +455,23 @@ signal = Signal(
     reason=["Manual signal for testing"]
 )
 
-# Execute the trade
 system.execute_signal(signal)
-
-# Check portfolio
 system.print_portfolio_status()
 
-# Close position
+# Close the position manually
 system.close_position("Manual Exit", 155.00)
+```
+
+### Example 5: Generate Report
+
+```python
+from src.automated_trading_system import AutomatedTradingSystem
+
+system = AutomatedTradingSystem(initial_capital=25000, ticker="NVDA")
+system.backtest("2023-01-01", "2024-01-01")
+
+run_folder = system.save_report("2023-01-01", "2024-01-01")
+print(f"\nOpen report: {run_folder}/report.md")
 ```
 
 ---
@@ -475,70 +480,75 @@ system.close_position("Manual Exit", 155.00)
 
 ### 1. Multi-Timeframe Analysis
 
-```python
-# Signals are generated across multiple timeframes
-# Higher timeframe signals have more weight
+The system automatically combines weekly, daily, and 4h signals. You can inspect each:
 
-system.signals_history  # List of all generated signals
-for signal in system.signals_history[-5:]:
-    print(f"{signal.timeframe}: {signal}")
+```python
+# After calculate_indicators(), inspect per-timeframe data
+for tf in ['daily', 'weekly', '4h']:
+    if tf in system.indicators:
+        df = system.indicators[tf]
+        print(f"{tf}: {len(df)} bars, last close ${df['Close'].iloc[-1]:.2f}")
 ```
 
 ### 2. Custom Risk Management Rules
 
 ```python
-# Customize risk parameters
 system.risk_manager.max_positions = 10
 system.risk_manager.max_position_size_pct = 0.05
 system.risk_manager.max_daily_loss_pct = 0.05
 
-# Validate before trading
+# Check manually before executing
 valid, reason = system.risk_manager.validate_trade(
-    system.portfolio,
-    "AAPL",
-    100,      # quantity
-    150.00,   # price
-    145.00    # stop_loss
+    system.portfolio, "AAPL", shares, price, stop_loss
 )
-
 if valid:
-    print("Trade is valid, executing...")
+    print("Trade valid")
 else:
-    print(f"Trade invalid: {reason}")
+    print(f"Rejected: {reason}")
 ```
 
 ### 3. Portfolio Analysis
 
 ```python
-# Get detailed portfolio metrics
 summary = system.portfolio.get_portfolio_summary()
-
 print(f"Total Value: ${summary['total_value']:,.2f}")
 print(f"Return: {summary['return_pct']:.2f}%")
-print(f"Realized P&L: ${summary['realized_pnl']:,.2f}")
-print(f"Unrealized P&L: ${summary['unrealized_pnl']:,.2f}")
+print(f"Realized P&L: ${summary['realized_pnl']:+,.2f}")
+print(f"Unrealized P&L: ${summary['unrealized_pnl']:+,.2f}")
 
-# Access individual trades
 for trade in system.portfolio.closed_positions:
-    print(f"{trade.ticker}: {trade.side} | Entry: ${trade.entry_price:.2f} | "
-          f"Exit: ${trade.exit_price:.2f} | P&L: ${trade.profit_loss:+.2f}")
+    print(f"{trade.ticker} {trade.side} | "
+          f"Entry ${trade.entry_price:.2f} → Exit ${trade.exit_price:.2f} | "
+          f"P&L ${trade.profit_loss:+.2f} | {trade.exit_signal}")
 ```
 
 ### 4. Signal Confidence Analysis
 
 ```python
-# Analyze signal confidence distribution
 import numpy as np
 
 confidences = [s.confidence for s in system.signals_history]
+if confidences:
+    print(f"Avg Confidence: {np.mean(confidences):.1%}")
+    print(f"Min Confidence: {np.min(confidences):.1%}")
+    print(f"Max Confidence: {np.max(confidences):.1%}")
+    high = sum(1 for c in confidences if c > 0.80)
+    print(f"High Confidence Signals (>80%): {high}")
+```
 
-print(f"Avg Confidence: {np.mean(confidences):.1%}")
-print(f"Min Confidence: {np.min(confidences):.1%}")
-print(f"Max Confidence: {np.max(confidences):.1%}")
+### 5. Exporting Data
 
-# Confidence histogram
-high_confidence = sum(1 for c in confidences if c > 0.80)
-print(f"High Confidence Signals (>80%): {high_confidence}")
+```python
+# Export trades to CSV
+csv_path = system.export_trades()
+print(f"Trades: {csv_path}")
+
+# JSON backtest results are auto-saved during backtest()
+# Find them in data/backtest_results/
+
+# Clear download cache
+removed = system.clear_cache("AAPL")
+print(f"Cleared {removed} cache file(s)")
 ```
 
 ---
@@ -547,23 +557,18 @@ print(f"High Confidence Signals (>80%): {high_confidence}")
 
 ### Issue: "No data found for ticker"
 ```python
-# Solution: Check ticker symbol
-# Verify ticker on Yahoo Finance
 import yfinance as yf
 
-try:
-    df = yf.download("INVALID", start="2023-01-01", end="2023-12-31")
-except:
-    print("Invalid ticker symbol")
+df = yf.download("AAPL", start="2023-01-01", end="2023-12-31", progress=False)
+print(df.head())  # Should show OHLCV data
 
-# Use correct ticker
-system = AutomatedTradingSystem(ticker="AAPL")  # Not "APPLE"
+# Use correct ticker symbol (e.g., "AAPL" not "APPLE")
 ```
 
 ### Issue: "Insufficient capital to open position"
 ```python
-# Solution: Adjust position sizing
-system.risk_manager.max_position_size_pct = 0.02  # Reduce to 2%
+# Reduce position size
+system.risk_manager.max_position_size_pct = 0.02  # 2%
 
 # Or increase capital
 system = AutomatedTradingSystem(initial_capital=100000)
@@ -571,28 +576,31 @@ system = AutomatedTradingSystem(initial_capital=100000)
 
 ### Issue: "No signals generated"
 ```python
-# Solution: Verify data and indicators
-if system.indicators['daily'].empty:
-    print("No indicator data")
+# Check indicator data is populated
+df = system.indicators.get('daily')
+if df is not None:
+    print(df[['Close', 'RSI', 'MACD', 'ADX']].tail(10))
 
-# Check indicator values
-df = system.indicators['daily']
-print(df[['Close', 'RSI', 'MACD', 'ADX']].tail(10))
+# Lower threshold temporarily (not recommended for live trading)
+system.signal_generator.confidence_threshold = 0.45
 
-# Lower confidence threshold temporarily for testing
-# (Not recommended for live trading)
+# Ensure ADX is above 15 (required)
+print(f"ADX range: {df['ADX'].min():.1f} – {df['ADX'].max():.1f}")
+```
+
+### Issue: "Stale data / wrong prices"
+```python
+# Clear the cache and re-fetch
+system.clear_cache("AAPL")
+system.fetch_data(start_date, end_date)
 ```
 
 ### Issue: "Slow Performance"
 ```python
-# Solution: Reduce data size
-system.backtest(
-    start_date="2023-06-01",  # 1 year instead of 5
-    end_date="2024-01-31"
-)
+# Use a shorter date range for testing
+system.backtest(start_date="2023-06-01", end_date="2024-01-31")
 
-# Or backtest fewer stocks
-tickers = ["AAPL", "MSFT"]  # Test 2 instead of 100
+# Data is cached after first fetch — subsequent runs on same range are fast
 ```
 
 ---
@@ -600,57 +608,42 @@ tickers = ["AAPL", "MSFT"]  # Test 2 instead of 100
 ## Performance Metrics Explained
 
 ### Profit Factor
-- **Formula:** Total Wins / Total Losses
-- **Target:** > 1.5 (healthy strategy)
-- **Interpretation:** 2.0 = $2 win per $1 loss
+- **Formula:** Gross Wins / Gross Losses
+- **Target:** >1.5
+- **Example:** 2.0 means $2 won per $1 lost
 
 ### Win Rate
-- **Formula:** Winning Trades / Total Trades
-- **Target:** > 50% (with good profit factor)
-- **Interpretation:** 60% = 6 out of 10 trades win
-
-### Average Holding Period
-- **Formula:** Average days position held
-- **Target:** Depends on strategy (day trade vs swing)
-
-### Sharpe Ratio
-- **Formula:** Return / Risk (volatility-adjusted)
-- **Target:** > 1.0 (indicates good risk-adjusted return)
+- **Formula:** Winning Trades / Total Trades × 100
+- **Target:** >50% (especially when profit factor is solid)
 
 ### Max Drawdown
-- **Formula:** (Peak - Trough) / Peak
-- **Target:** < 20% (drawdown acceptable)
-- **Interpretation:** Max loss from peak equity
+- **Formula:** (Peak Equity − Trough Equity) / Peak Equity × 100
+- **Target:** <20%
+- Maximum loss from any equity peak
+
+### Avg Holding Days
+- Average number of days a position is held
+- Depends on strategy style (swing vs trend following)
 
 ---
 
 ## Next Steps
 
-1. **Backtest on historical data** - Validate strategy
-2. **Paper trade** - Test signals without real money
-3. **Live trading** - Start with small positions
-4. **Monitor and adjust** - Refine parameters based on performance
-5. **Risk management** - Never risk more than you can afford to lose
+1. **Backtest on historical data** — Validate strategy before risking capital
+2. **Paper trade** — Generate live signals without executing real trades
+3. **Live trading** — Start with minimum position sizes
+4. **Monitor and adjust** — Review logs and reports regularly
+5. **Risk management** — Never risk more than you can afford to lose
 
 ---
 
 ## Disclaimer
 
-⚠️ **This system is for educational purposes. Always:**
-- Backtest thoroughly before trading
+This system is for educational and research purposes.
+
+- Backtest thoroughly before live trading
 - Start with small position sizes
 - Use stop losses on every trade
-- Never trade with money you can't afford to lose
-- Consult a financial advisor for investment decisions
-
----
-
-## Support & Updates
-
-For issues, improvements, or contributions:
-1. Review the code comments
-2. Check the troubleshooting section
-3. Verify data quality and timeframes
-4. Test with different parameters
-
-Happy trading! 🚀
+- Never trade with money you cannot afford to lose
+- Consult a licensed financial advisor for investment decisions
+- Past performance does not guarantee future results

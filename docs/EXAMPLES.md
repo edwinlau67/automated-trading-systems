@@ -49,7 +49,7 @@ print(comparison.to_string())
 
 ## 3. Custom Configuration
 
-Override risk settings and indicator thresholds.
+Override risk settings at runtime.
 
 ```python
 from src.automated_trading_system import AutomatedTradingSystem
@@ -87,15 +87,14 @@ ok = system.fetch_realtime_data(lookback_days=365)
 
 if ok:
     system.calculate_indicators()
-    signals = system.generate_signals()
-    if signals:
-        latest = signals[-1]
-        print(f"Signal: {latest.signal_type}")
-        print(f"Confidence: {latest.confidence:.1%}")
-        print(f"Entry: ${latest.entry_price:.2f}")
-        print(f"Stop: ${latest.stop_loss:.2f}")
-        print(f"Target: ${latest.take_profit:.2f}")
-        print(f"Reasons: {', '.join(latest.reason)}")
+    signal = system.generate_signals()  # returns Signal | None
+    if signal:
+        print(f"Signal: {signal.signal_type}")
+        print(f"Confidence: {signal.confidence:.1%}")
+        print(f"Entry: ${signal.entry_price:.2f}")
+        print(f"Stop: ${signal.stop_loss:.2f}")
+        print(f"Target: ${signal.take_profit:.2f}")
+        print(f"Reasons: {', '.join(signal.reason)}")
     else:
         print("No signal generated — conditions not met.")
 ```
@@ -114,8 +113,8 @@ from src.automated_trading_system import AutomatedTradingSystem
 system = AutomatedTradingSystem(initial_capital=25000, ticker="NVDA")
 system.backtest("2023-01-01", "2024-01-01")
 
-report_path = system.save_report("2023-01-01", "2024-01-01")
-print(f"Report saved to: {report_path}")
+run_folder = system.save_report("2023-01-01", "2024-01-01")
+print(f"Report saved to: {run_folder}/")
 ```
 
 **Script:** `examples/05_advanced_analysis.py`
@@ -128,10 +127,11 @@ Use `IndicatorCalculator` as a standalone library.
 
 ```python
 import yfinance as yf
+import pandas as pd
 from src.indicator_calculator import IndicatorCalculator
 
 df = yf.download("SPY", start="2024-01-01", end="2024-12-31", progress=False)
-if isinstance(df.columns, __import__("pandas").MultiIndex):
+if isinstance(df.columns, pd.MultiIndex):
     df.columns = df.columns.get_level_values(0)
 
 df = IndicatorCalculator.calculate_all(df)
@@ -181,9 +181,38 @@ summary = system.portfolio.get_portfolio_summary()
 print(f"Final value: ${summary['total_value']:,.2f}")
 print(f"Realized P&L: ${summary['realized_pnl']:,.2f}")
 
-for trade in system.portfolio.closed_trades:
-    pnl = (trade.exit_price - trade.entry_price) * trade.shares
-    if trade.side == "SHORT":
-        pnl = -pnl
-    print(f"{trade.ticker} {trade.side}: ${pnl:+.2f}")
+for trade in system.portfolio.closed_positions:
+    pnl = trade.profit_loss
+    print(f"{trade.ticker} {trade.side}: ${pnl:+.2f} ({trade.return_pct:+.1f}%)")
+```
+
+---
+
+## Exporting Trades to CSV
+
+```python
+from src.automated_trading_system import AutomatedTradingSystem
+
+system = AutomatedTradingSystem(10000, "AAPL")
+system.backtest("2023-01-01", "2024-01-01")
+
+csv_path = system.export_trades()
+print(f"Trades saved to: {csv_path}")
+```
+
+---
+
+## Clearing the Data Cache
+
+```python
+from src.automated_trading_system import AutomatedTradingSystem
+
+system = AutomatedTradingSystem(10000, "AAPL")
+
+# Clear only AAPL cache
+removed = system.clear_cache("AAPL")
+print(f"Removed {removed} cached file(s).")
+
+# Or clear all cached files
+system.clear_cache()
 ```
